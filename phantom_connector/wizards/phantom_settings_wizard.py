@@ -76,6 +76,12 @@ class PhantomSettingsWizard(models.TransientModel):
         }
 
     def action_save(self):
+        """Not opened as a dialog (see the action's target="current"), so
+        there is no modal to close -- return to the dashboard instead,
+        like a regular "Save" on any other full-page form.
+        """
         self.ensure_one()
         self.company_id.sudo().write(self._phantom_settings_vals())
-        return {"type": "ir.actions.act_window_close"}
+        return self.env["ir.actions.actions"]._for_xml_id(
+            "phantom_connector.phantom_dashboard_client_action"
+        )

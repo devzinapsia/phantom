@@ -5,28 +5,29 @@
         <field name="model">phantom.settings.wizard</field>
         <field name="arch" type="xml">
             <form string="Phantom Settings">
-                <group>
-                    <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
-                    <field name="phantom_enabled"/>
-                </group>
-                <group invisible="not phantom_enabled">
-                    <group string="Connection" name="connection">
-                        <field name="phantom_url" placeholder="http://IPPHANTOM/Includes/CRM/API_CRM.php"/>
-                        <field name="phantom_user"/>
-                        <field name="phantom_password" password="True"/>
-                    </group>
-                    <group string="Schedule" name="schedule">
-                        <field name="phantom_processing_mode"/>
-                        <field name="phantom_timezone" invisible="phantom_processing_mode != 'automatic'"/>
-                        <field name="phantom_read_hour" widget="float_time"
-                            invisible="phantom_processing_mode != 'automatic'"/>
-                        <field name="phantom_sweep_window_days"/>
-                    </group>
-                </group>
-                <footer>
+                <header>
                     <button name="action_save" type="object" string="Save" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
-                </footer>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
+                        <field name="phantom_enabled"/>
+                    </group>
+                    <group invisible="not phantom_enabled">
+                        <group string="Connection" name="connection">
+                            <field name="phantom_url" placeholder="http://IPPHANTOM/Includes/CRM/API_CRM.php"/>
+                            <field name="phantom_user"/>
+                            <field name="phantom_password" password="True"/>
+                        </group>
+                        <group string="Schedule" name="schedule">
+                            <field name="phantom_processing_mode"/>
+                            <field name="phantom_timezone" invisible="phantom_processing_mode != 'automatic'"/>
+                            <field name="phantom_read_hour" widget="float_time"
+                                invisible="phantom_processing_mode != 'automatic'"/>
+                            <field name="phantom_sweep_window_days"/>
+                        </group>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
@@ -35,6 +36,6 @@
         <field name="name">Phantom Settings</field>
         <field name="res_model">phantom.settings.wizard</field>
         <field name="view_mode">form</field>
-        <field name="target">new</field>
+        <field name="target">current</field>
     </record>
 </odoo>
