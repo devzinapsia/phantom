@@ -9,7 +9,7 @@
     "depends": ["phantom_connector", "account", "account_move_classification", "l10n_ar"],
     "data": [
         "data/ir_cron_data.xml",
-        "views/res_config_settings_views.xml",
+        "wizards/views/phantom_settings_wizard_views.xml",
         "views/phantom_invoice_views.xml",
         "views/phantom_receipt_views.xml",
         "views/account_move_views.xml",

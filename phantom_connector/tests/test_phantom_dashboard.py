@@ -40,18 +40,20 @@ class TestPhantomDashboard(TransactionCase):
         })
 
     def test_dashboard_indicators(self):
-        dashboard = self.env["phantom.dashboard"].create({"company_id": self.company.id})
+        data = self.env["phantom.dashboard"].get_dashboard_data()
 
-        self.assertEqual(dashboard.invoices_this_month_count, 2)
-        self.assertEqual(dashboard.invoices_this_month_amount, 300.0)
-        self.assertEqual(dashboard.invoices_last_month_count, 1)
-        self.assertEqual(dashboard.invoices_last_month_amount, 50.0)
-        self.assertEqual(dashboard.invoices_pending_count, 2)
-        self.assertEqual(dashboard.receipts_pending_count, 1)
+        self.assertEqual(data["invoices_this_month_count"], 2)
+        self.assertEqual(data["invoices_this_month_amount"], 300.0)
+        self.assertEqual(data["invoices_last_month_count"], 1)
+        self.assertEqual(data["invoices_last_month_amount"], 50.0)
+        self.assertEqual(data["invoices_pending_count"], 2)
+        self.assertEqual(data["receipts_pending_count"], 1)
+        self.assertEqual(data["invoices_pending_drilldown"]["res_model"], "phantom.invoice")
+        self.assertEqual(data["receipts_pending_drilldown"]["res_model"], "phantom.receipt")
 
     def test_dashboard_last_run_indicators(self):
         now = fields.Datetime.now()
         self.company.phantom_last_read_datetime = now
-        dashboard = self.env["phantom.dashboard"].create({"company_id": self.company.id})
-        self.assertEqual(dashboard.last_read_datetime, now)
-        self.assertFalse(dashboard.last_creation_datetime)
+        data = self.env["phantom.dashboard"].get_dashboard_data()
+        self.assertEqual(data["last_read_datetime"], fields.Datetime.to_string(now))
+        self.assertFalse(data["last_creation_datetime"])

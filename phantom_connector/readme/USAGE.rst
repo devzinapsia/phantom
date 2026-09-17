@@ -1,9 +1,8 @@
 Importing
 =========
 
-* **Manual mode**: use **Phantom ‣ Import now** (or the button in
-  Settings) whenever you want to pull the latest invoices/receipts for
-  the current company.
+* **Manual mode**: use **Phantom ‣ Import now** whenever you want to
+  pull the latest invoices/receipts for the current company.
 * **Automatic mode**: once a day, at the configured local time, the
   system authenticates against Phantom and queries both
   ``Consultar_Transacciones_Facturacion`` and
@@ -25,8 +24,8 @@ transaction ID) within the current company:
 
 A failure on one voucher, or on one company (in automatic mode, across
 several companies), never stops the rest of the batch: it is logged and
-skipped. An automatic-mode failure also notifies **Technical Settings**
-users so it doesn't go unnoticed.
+skipped. An automatic-mode failure also notifies **Phantom
+Administrator** users so it doesn't go unnoticed.
 
 Reviewing
 =========
@@ -37,10 +36,12 @@ Processed/Error), company, and voucher date range, and "Group By" options
 for status and company. Both are read-only: they reflect what Phantom
 reported, not something to edit by hand.
 
-**Phantom ‣ Dashboard** shows, for the current company: invoices
-imported this month and last month (count and amount), invoices and
-receipts currently pending, and the date/time of the last successful
-Phantom read. It also shows the last time documents were created from
-Phantom in Odoo -- that indicator is defined here so the dashboard works
-even without ``phantom_account_bridge`` installed (it shows blank/"Never"
-in that case), but is only ever set by that module.
+**Phantom ‣ Dashboard** shows, for the current company, as a set of KPI
+cards (same style as the **Dashboards** app): invoices imported this
+month and last month (count and amount), invoices and receipts
+currently pending (clicking either opens the filtered list), and the
+date/time of the last successful Phantom read. It also shows the last
+time documents were created from Phantom in Odoo -- that indicator is
+defined here so the dashboard works even without
+``phantom_account_bridge`` installed (it shows "Never" in that case),
+but is only ever set by that module.

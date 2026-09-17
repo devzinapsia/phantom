@@ -1,46 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="phantom_dashboard_form_view" model="ir.ui.view">
-        <field name="name">phantom.dashboard.form</field>
-        <field name="model">phantom.dashboard</field>
-        <field name="arch" type="xml">
-            <form string="Phantom Dashboard" create="0" delete="0">
-                <field name="currency_id" invisible="1"/>
-                <header>
-                    <button name="%(phantom_connector.phantom_import_wizard_action)d" type="action"
-                        string="Import now" class="btn-primary"/>
-                </header>
-                <sheet>
-                    <group>
-                        <field name="company_id" readonly="1" options="{'no_create': True}"/>
-                    </group>
-                    <group string="Invoices">
-                        <group>
-                            <field name="invoices_this_month_count" string="This month (count)"/>
-                            <field name="invoices_this_month_amount" string="This month (amount)"/>
-                        </group>
-                        <group>
-                            <field name="invoices_last_month_count" string="Last month (count)"/>
-                            <field name="invoices_last_month_amount" string="Last month (amount)"/>
-                        </group>
-                    </group>
-                    <group string="Pending">
-                        <field name="invoices_pending_count"/>
-                        <field name="receipts_pending_count"/>
-                    </group>
-                    <group string="Last runs">
-                        <field name="last_read_datetime"/>
-                        <field name="last_creation_datetime"/>
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <record id="phantom_dashboard_action" model="ir.actions.act_window">
+    <record id="phantom_dashboard_action" model="ir.actions.client">
         <field name="name">Phantom Dashboard</field>
-        <field name="res_model">phantom.dashboard</field>
-        <field name="view_mode">form</field>
-        <field name="target">current</field>
+        <field name="tag">phantom_connector.dashboard</field>
     </record>
 </odoo>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="phantom_connector.PhantomDashboard">
+        <Layout display="display">
+            <div class="o_phantom_dashboard p-3">
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-3">
+                        <DashboardsKpiCard
+                            title="labels.invoicesThisMonth"
+                            value="state.data.invoices_this_month_count"
+                            secondaryValue="formatMonetary(state.data.invoices_this_month_amount)"
+                        />
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <DashboardsKpiCard
+                            title="labels.invoicesLastMonth"
+                            value="state.data.invoices_last_month_count"
+                            secondaryValue="formatMonetary(state.data.invoices_last_month_amount)"
+                        />
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <DashboardsKpiCard
+                            title="labels.pendingInvoices"
+                            value="state.data.invoices_pending_count"
+                            onClick="() => this.onDrilldownClick(state.data.invoices_pending_drilldown)"
+                        />
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <DashboardsKpiCard
+                            title="labels.pendingReceipts"
+                            value="state.data.receipts_pending_count"
+                            onClick="() => this.onDrilldownClick(state.data.receipts_pending_drilldown)"
+                        />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-4">
+                        <DashboardsKpiCard
+                            title="labels.lastRead"
+                            value="formatDateTime(state.data.last_read_datetime)"
+                        />
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <DashboardsKpiCard
+                            title="labels.lastCreation"
+                            value="formatDateTime(state.data.last_creation_datetime)"
+                        />
+                    </div>
+                </div>
+
+            </div>
+        </Layout>
+    </t>
+
+</templates>

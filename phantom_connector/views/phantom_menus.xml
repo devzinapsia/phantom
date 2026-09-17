@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_phantom_root" name="Phantom" sequence="90" groups="base.group_user"/>
+    <menuitem id="menu_phantom_root" name="Phantom" sequence="90" groups="group_phantom_user"/>
 
     <menuitem id="menu_phantom_dashboard" name="Dashboard"
         parent="menu_phantom_root" action="phantom_dashboard_action" sequence="10"/>
@@ -13,5 +13,9 @@
 
     <menuitem id="menu_phantom_import_now" name="Import now"
         parent="menu_phantom_root" action="phantom_connector.phantom_import_wizard_action"
-        sequence="40" groups="base.group_system"/>
+        sequence="40" groups="group_phantom_manager"/>
+
+    <menuitem id="menu_phantom_settings" name="Configuration"
+        parent="menu_phantom_root" action="phantom_connector.phantom_settings_wizard_action"
+        sequence="50" groups="group_phantom_manager"/>
 </odoo>

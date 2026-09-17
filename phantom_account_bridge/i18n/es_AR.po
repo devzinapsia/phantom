@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-17 20:01+0000\n"
-"PO-Revision-Date: 2026-09-17 20:01+0000\n"
+"POT-Creation-Date: 2026-09-17 23:15+0000\n"
+"PO-Revision-Date: 2026-09-17 23:15+0000\n"
 "Last-Translator: Zinapsia\n"
 "Language-Team: \n"
 "Language: es_AR\n"
@@ -23,21 +23,19 @@ msgid "<span class=\"o_stat_text\">Phantom</span>"
 msgstr "<span class=\"o_stat_text\">Phantom</span>"
 
 #. module: phantom_account_bridge
+#: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_settings_wizard__phantom_analytic_account_id
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_res_company__phantom_analytic_account_id
-#: model:ir.model.fields,field_description:phantom_account_bridge.field_res_config_settings__phantom_analytic_account_id
 msgid "Analytic account"
 msgstr "Cuenta analítica"
 
 #. module: phantom_account_bridge
 #: model:ir.model.fields,help:phantom_account_bridge.field_res_company__phantom_analytic_account_id
-#: model:ir.model.fields,help:phantom_account_bridge.field_res_config_settings__phantom_analytic_account_id
 msgid "Applied at 100% to every invoice line created by this integration."
 msgstr ""
 "Se aplica al 100% en cada línea de factura creada por esta integración."
 
 #. module: phantom_account_bridge
 #: model:ir.model.fields,help:phantom_account_bridge.field_res_company__phantom_classification_id
-#: model:ir.model.fields,help:phantom_account_bridge.field_res_config_settings__phantom_classification_id
 msgid ""
 "Applied to every invoice created by this integration, to make them easy to "
 "filter/report on."
@@ -46,8 +44,8 @@ msgstr ""
 "filtrarlas/reportarlas fácil."
 
 #. module: phantom_account_bridge
+#: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_settings_wizard__phantom_classification_id
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_res_company__phantom_classification_id
-#: model:ir.model.fields,field_description:phantom_account_bridge.field_res_config_settings__phantom_classification_id
 msgid "Classification"
 msgstr "Clasificación"
 
@@ -57,19 +55,14 @@ msgid "Companies"
 msgstr "Compañías"
 
 #. module: phantom_account_bridge
-#: model:ir.model,name:phantom_account_bridge.model_res_config_settings
-msgid "Config Settings"
-msgstr "Ajustes de configuración"
-
-#. module: phantom_account_bridge
+#: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_settings_wizard__phantom_create_hour
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_res_company__phantom_create_hour
-#: model:ir.model.fields,field_description:phantom_account_bridge.field_res_config_settings__phantom_create_hour
 msgid "Creation time"
 msgstr "Hora de creación"
 
 #. module: phantom_account_bridge
+#: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_settings_wizard__phantom_default_product_id
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_res_company__phantom_default_product_id
-#: model:ir.model.fields,field_description:phantom_account_bridge.field_res_config_settings__phantom_default_product_id
 msgid "Default product"
 msgstr "Artículo por defecto"
 
@@ -78,20 +71,25 @@ msgstr "Artículo por defecto"
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_account_payment__display_name
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_invoice__display_name
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_receipt__display_name
+#: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_settings_wizard__display_name
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_staging_mixin__display_name
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_res_company__display_name
-#: model:ir.model.fields,field_description:phantom_account_bridge.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Nombre a mostrar"
+
+#. module: phantom_account_bridge
+#: model_terms:ir.ui.view,arch_db:phantom_account_bridge.phantom_settings_wizard_form_view
+msgid "Documents"
+msgstr "Documentos"
 
 #. module: phantom_account_bridge
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_account_move__id
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_account_payment__id
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_invoice__id
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_receipt__id
+#: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_settings_wizard__id
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_staging_mixin__id
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_res_company__id
-#: model:ir.model.fields,field_description:phantom_account_bridge.field_res_config_settings__id
 msgid "ID"
 msgstr "ID"
 
@@ -124,7 +122,6 @@ msgstr ""
 
 #. module: phantom_account_bridge
 #: model:ir.model.fields,help:phantom_account_bridge.field_res_company__phantom_create_hour
-#: model:ir.model.fields,help:phantom_account_bridge.field_res_config_settings__phantom_create_hour
 msgid ""
 "Local time of day (in the 'Import timezone' setting above) at which the "
 "automatic document-creation cron runs for this company, once per day. Only "
@@ -197,6 +194,11 @@ msgid "Phantom Receipt (staging)"
 msgstr "Recibo Phantom (staging)"
 
 #. module: phantom_account_bridge
+#: model:ir.model,name:phantom_account_bridge.model_phantom_settings_wizard
+msgid "Phantom Settings"
+msgstr "Ajustes de Phantom"
+
+#. module: phantom_account_bridge
 #: model:ir.model,name:phantom_account_bridge.model_phantom_staging_mixin
 msgid "Phantom Staging Upsert Mixin"
 msgstr "Mixin de upsert de staging de Phantom"
@@ -230,14 +232,14 @@ msgid "Receipt"
 msgstr "Recibo"
 
 #. module: phantom_account_bridge
+#: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_settings_wizard__phantom_receipt_journal_id
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_res_company__phantom_receipt_journal_id
-#: model:ir.model.fields,field_description:phantom_account_bridge.field_res_config_settings__phantom_receipt_journal_id
 msgid "Receipt journal"
 msgstr "Diario de recibos"
 
 #. module: phantom_account_bridge
+#: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_settings_wizard__phantom_sales_journal_id
 #: model:ir.model.fields,field_description:phantom_account_bridge.field_res_company__phantom_sales_journal_id
-#: model:ir.model.fields,field_description:phantom_account_bridge.field_res_config_settings__phantom_sales_journal_id
 msgid "Sales journal"
 msgstr "Diario de ventas"
 
@@ -263,7 +265,6 @@ msgstr ""
 
 #. module: phantom_account_bridge
 #: model:ir.model.fields,help:phantom_account_bridge.field_res_company__phantom_default_product_id
-#: model:ir.model.fields,help:phantom_account_bridge.field_res_config_settings__phantom_default_product_id
 msgid ""
 "The only product used on invoice lines created by this integration -- "
 "Phantom does not report products mappable to Odoo, only free text in "

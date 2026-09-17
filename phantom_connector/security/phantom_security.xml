@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_phantom" model="ir.module.category">
+        <field name="name">Phantom</field>
+        <field name="description">Access rights for the Phantom billing/collections integration.</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="res_groups_privilege_phantom" model="res.groups.privilege">
+        <field name="name">Phantom</field>
+        <field name="category_id" ref="module_category_phantom"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="group_phantom_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_phantom"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Can view Phantom invoices/receipts and the dashboard, and trigger a manual import.</field>
+    </record>
+
+    <record id="group_phantom_manager" model="res.groups">
+        <field name="name">Administrator</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_phantom"/>
+        <field name="implied_ids" eval="[(4, ref('group_phantom_user'))]"/>
+        <field name="comment">Full access, including the Phantom configuration screen (URL, credentials, journals).</field>
+    </record>
+</odoo>

@@ -146,7 +146,7 @@ class ResCompany(models.Model):
 
     def _phantom_notify_creation_failure(self, exc):
         self.ensure_one()
-        partner_ids = self.env.ref("base.group_system").users.partner_id.ids
+        partner_ids = self.env.ref("phantom_connector.group_phantom_manager").users.partner_id.ids
         if not partner_ids:
             return
         self.env["mail.thread"].message_notify(

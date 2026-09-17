@@ -21,9 +21,10 @@ and report on.
 Configuration
 =============
 
-Go to **Settings ‣ General Settings**, in the same **Phantom integration**
-section added by ``phantom_connector`` (only shown once **Enable Phantom
-integration** is checked):
+Go to **Phantom ‣ Configuration** (the same dedicated screen added by
+``phantom_connector``, visible to **Administrator** users only), in the
+**Documents** section (only shown once **Enable Phantom integration** is
+checked):
 
 * **Sales journal**: the journal used for every invoice/credit note/debit
   note created from Phantom. Must be configured for AFIP documents

@@ -26,8 +26,26 @@ everything downstream of it, is out of scope for this module by design.
 Configuration
 =============
 
-Go to **Settings ‣ General Settings**, in the **Phantom integration**
-section:
+Access rights
+-------------
+
+This module adds its own **Phantom** entry to **Settings ‣ Users &
+Companies ‣ Users**, on the *Access Rights* tab:
+
+* **User**: can view Phantom invoices/receipts and the dashboard, and
+  trigger a manual import.
+* **Administrator**: everything **User** can do, plus access to
+  **Phantom ‣ Configuration**, where the API URL/credentials and
+  schedule are set. This does **not** require the user to also be an
+  Odoo Technical/System Administrator -- Phantom's own configuration
+  screen is deliberately independent of the generic Settings page,
+  which only System Administrators can open at all.
+
+Settings
+--------
+
+Go to **Phantom ‣ Configuration** (visible to **Administrator** users
+only):
 
 * **Enable Phantom integration**: master switch for this company. All
   other fields below only show once this is checked.
@@ -35,8 +53,7 @@ section:
   ``http://IPPHANTOM/Includes/CRM/API_CRM.php``.
 * **Phantom API user** / **Phantom API password**: credentials of a
   superuser-profile API account created in Phantom itself (**Phantom ‣
-  Configuraciones ‣ Usuarios**). The password field is only visible to
-  users in the **Technical Settings** group.
+  Configuraciones ‣ Usuarios**).
 * **Processing mode**: **Manual** (the only way to import is the "Import
   now" button/action below) or **Automatic** (also runs once a day on
   its own, in addition to "Import now" still being available to force an
@@ -64,9 +81,8 @@ Usage
 Importing
 ---------
 
-* **Manual mode**: use **Phantom ‣ Import now** (or the button in
-  Settings) whenever you want to pull the latest invoices/receipts for
-  the current company.
+* **Manual mode**: use **Phantom ‣ Import now** whenever you want to
+  pull the latest invoices/receipts for the current company.
 * **Automatic mode**: once a day, at the configured local time, the
   system authenticates against Phantom and queries both
   ``Consultar_Transacciones_Facturacion`` and
@@ -88,8 +104,8 @@ transaction ID) within the current company:
 
 A failure on one voucher, or on one company (in automatic mode, across
 several companies), never stops the rest of the batch: it is logged and
-skipped. An automatic-mode failure also notifies **Technical Settings**
-users so it doesn't go unnoticed.
+skipped. An automatic-mode failure also notifies **Phantom
+Administrator** users so it doesn't go unnoticed.
 
 Reviewing
 ---------
@@ -100,13 +116,15 @@ Processed/Error), company, and voucher date range, and "Group By" options
 for status and company. Both are read-only: they reflect what Phantom
 reported, not something to edit by hand.
 
-**Phantom ‣ Dashboard** shows, for the current company: invoices
-imported this month and last month (count and amount), invoices and
-receipts currently pending, and the date/time of the last successful
-Phantom read. It also shows the last time documents were created from
-Phantom in Odoo -- that indicator is defined here so the dashboard works
-even without ``phantom_account_bridge`` installed (it shows blank/"Never"
-in that case), but is only ever set by that module.
+**Phantom ‣ Dashboard** shows, for the current company, as a set of KPI
+cards (same style as the **Dashboards** app): invoices imported this
+month and last month (count and amount), invoices and receipts
+currently pending (clicking either opens the filtered list), and the
+date/time of the last successful Phantom read. It also shows the last
+time documents were created from Phantom in Odoo -- that indicator is
+defined here so the dashboard works even without
+``phantom_account_bridge`` installed (it shows "Never" in that case),
+but is only ever set by that module.
 
 Bug Tracker
 ===========

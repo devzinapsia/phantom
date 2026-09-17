@@ -17,7 +17,9 @@ class ResCompany(models.Model):
 
     phantom_url = fields.Char(string="Phantom API URL")
     phantom_user = fields.Char(string="Phantom API user")
-    phantom_password = fields.Char(string="Phantom API password", groups="base.group_system")
+    phantom_password = fields.Char(
+        string="Phantom API password", groups="phantom_connector.group_phantom_manager"
+    )
     phantom_enabled = fields.Boolean(string="Enable Phantom integration", default=False)
     phantom_processing_mode = fields.Selection(
         [("manual", "Manual"), ("automatic", "Automatic")],
@@ -157,13 +159,13 @@ class ResCompany(models.Model):
         return now_minutes >= configured_minutes
 
     def _phantom_notify_import_failure(self, exc):
-        """Notify Technical Settings users (the only ones who can see the
+        """Notify Phantom Administrators (the only ones who can see the
         Phantom credentials in the first place) that an automatic import
         failed. The error text is safe to include: PhantomAPIError
         messages never contain the configured password.
         """
         self.ensure_one()
-        partner_ids = self.env.ref("base.group_system").users.partner_id.ids
+        partner_ids = self.env.ref("phantom_connector.group_phantom_manager").users.partner_id.ids
         if not partner_ids:
             return
         self.env["mail.thread"].message_notify(

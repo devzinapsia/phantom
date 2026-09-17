@@ -4,4 +4,3 @@ from . import phantom_invoice
 from . import phantom_receipt
 from . import phantom_dashboard
 from . import res_company
-from . import res_config_settings

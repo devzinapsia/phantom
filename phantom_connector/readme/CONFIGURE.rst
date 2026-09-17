@@ -1,5 +1,23 @@
-Go to **Settings ‣ General Settings**, in the **Phantom integration**
-section:
+Access rights
+=============
+
+This module adds its own **Phantom** entry to **Settings ‣ Users &
+Companies ‣ Users**, on the *Access Rights* tab:
+
+* **User**: can view Phantom invoices/receipts and the dashboard, and
+  trigger a manual import.
+* **Administrator**: everything **User** can do, plus access to
+  **Phantom ‣ Configuration**, where the API URL/credentials and
+  schedule are set. This does **not** require the user to also be an
+  Odoo Technical/System Administrator -- Phantom's own configuration
+  screen is deliberately independent of the generic Settings page,
+  which only System Administrators can open at all.
+
+Configuration
+=============
+
+Go to **Phantom ‣ Configuration** (visible to **Administrator** users
+only):
 
 * **Enable Phantom integration**: master switch for this company. All
   other fields below only show once this is checked.
@@ -7,8 +25,7 @@ section:
   ``http://IPPHANTOM/Includes/CRM/API_CRM.php``.
 * **Phantom API user** / **Phantom API password**: credentials of a
   superuser-profile API account created in Phantom itself (**Phantom ‣
-  Configuraciones ‣ Usuarios**). The password field is only visible to
-  users in the **Technical Settings** group.
+  Configuraciones ‣ Usuarios**).
 * **Processing mode**: **Manual** (the only way to import is the "Import
   now" button/action below) or **Automatic** (also runs once a day on
   its own, in addition to "Import now" still being available to force an

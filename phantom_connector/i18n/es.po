@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-17 19:30+0000\n"
-"PO-Revision-Date: 2026-09-17 19:30+0000\n"
+"POT-Creation-Date: 2026-09-17 23:15+0000\n"
+"PO-Revision-Date: 2026-09-17 23:15+0000\n"
 "Last-Translator: Zinapsia\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -33,25 +33,26 @@ msgstr ""
 "compañía."
 
 #. module: phantom_connector
+#: model:ir.module.category,description:phantom_connector.module_category_phantom
+msgid "Access rights for the Phantom billing/collections integration."
+msgstr ""
+"Derechos de acceso para la integración de facturación/cobranzas Phantom."
+
+#. module: phantom_connector
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__address
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__address
 msgid "Address"
 msgstr "Dirección"
 
 #. module: phantom_connector
+#: model:res.groups,name:phantom_connector.group_phantom_manager
+msgid "Administrator"
+msgstr "Administrador"
+
+#. module: phantom_connector
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_form_view
 msgid "Amount"
 msgstr "Importe"
-
-#. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__invoices_last_month_amount
-msgid "Amount last month"
-msgstr "Importe mes anterior"
-
-#. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__invoices_this_month_amount
-msgid "Amount this month"
-msgstr "Importe mes actual"
 
 #. module: phantom_connector
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
@@ -64,12 +65,23 @@ msgid "Associated receipt number"
 msgstr "Número de recibo asociado"
 
 #. module: phantom_connector
+#: model:ir.model.fields.selection,name:phantom_connector.selection__phantom_settings_wizard__phantom_processing_mode__automatic
 #: model:ir.model.fields.selection,name:phantom_connector.selection__res_company__phantom_processing_mode__automatic
 msgid "Automatic"
 msgstr "Automático"
 
 #. module: phantom_connector
+#: model:res.groups,comment:phantom_connector.group_phantom_user
+msgid ""
+"Can view Phantom invoices/receipts and the dashboard, and trigger a manual "
+"import."
+msgstr ""
+"Puede ver las facturas/recibos de Phantom y el tablero, y disparar una "
+"importación manual."
+
+#. module: phantom_connector
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_import_wizard_form_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_settings_wizard_form_view
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -85,19 +97,24 @@ msgid "Companies"
 msgstr "Compañías"
 
 #. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__company_id
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__company_id
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__company_id
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__company_id
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__company_id
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_search_view
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_search_view
 msgid "Company"
 msgstr "Compañía"
 
 #. module: phantom_connector
-#: model:ir.model,name:phantom_connector.model_res_config_settings
-msgid "Config Settings"
-msgstr "Ajustes de configuración"
+#: model:ir.ui.menu,name:phantom_connector.menu_phantom_settings
+msgid "Configuration"
+msgstr "Configuración"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_settings_wizard_form_view
+msgid "Connection"
+msgstr "Conexión"
 
 #. module: phantom_connector
 #. odoo-python
@@ -106,25 +123,20 @@ msgid "Could not reach Phantom at %(url)s: %(error)s"
 msgstr "No se pudo conectar con Phantom en %(url)s: %(error)s"
 
 #. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__create_uid
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__create_uid
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__create_uid
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__create_uid
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__create_uid
 msgid "Created by"
 msgstr "Creado por"
 
 #. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__create_date
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__create_date
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__create_date
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__create_date
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__create_date
 msgid "Created on"
 msgstr "Creado el"
-
-#. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__currency_id
-msgid "Currency"
-msgstr "Moneda"
 
 #. module: phantom_connector
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__currency_code
@@ -178,9 +190,9 @@ msgstr "Detalle (crudo)"
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__display_name
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__display_name
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__display_name
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__display_name
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_staging_mixin__display_name
 #: model:ir.model.fields,field_description:phantom_connector.field_res_company__display_name
-#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr "Nombre a mostrar"
 
@@ -195,8 +207,8 @@ msgid "Due dates and imputation"
 msgstr "Vencimientos e imputación"
 
 #. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__phantom_enabled
 #: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_enabled
-#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_enabled
 msgid "Enable Phantom integration"
 msgstr "Habilitar integración con Phantom"
 
@@ -228,8 +240,16 @@ msgid "First due date"
 msgstr "Primer vencimiento"
 
 #. module: phantom_connector
+#: model:res.groups,comment:phantom_connector.group_phantom_manager
+msgid ""
+"Full access, including the Phantom configuration screen (URL, credentials, "
+"journals)."
+msgstr ""
+"Acceso completo, incluida la pantalla de configuración de Phantom (URL, "
+"credenciales, diarios)."
+
+#. module: phantom_connector
 #: model:ir.model.fields,help:phantom_connector.field_res_company__phantom_sweep_window_days
-#: model:ir.model.fields,help:phantom_connector.field_res_config_settings__phantom_sweep_window_days
 msgid ""
 "How many days back are re-queried on every import run, to catch vouchers "
 "Phantom loaded late or modified after their own date."
@@ -243,9 +263,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__id
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__id
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__id
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__id
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_staging_mixin__id
 #: model:ir.model.fields,field_description:phantom_connector.field_res_company__id
-#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__id
 msgid "ID"
 msgstr "ID"
 
@@ -255,18 +275,9 @@ msgid "Import Now from Phantom"
 msgstr "Importar ahora desde Phantom"
 
 #. module: phantom_connector
-#: model_terms:ir.ui.view,arch_db:phantom_connector.res_config_settings_view_form
-msgid ""
-"Import invoices and receipts from the Phantom billing/collections system"
-msgstr ""
-"Importa facturas y recibos desde el sistema de facturación/cobranzas Phantom"
-
-#. module: phantom_connector
 #: model:ir.actions.act_window,name:phantom_connector.phantom_import_wizard_action
 #: model:ir.ui.menu,name:phantom_connector.menu_phantom_import_now
-#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_import_wizard_form_view
-#: model_terms:ir.ui.view,arch_db:phantom_connector.res_config_settings_view_form
 msgid "Import now"
 msgstr "Importar ahora"
 
@@ -276,21 +287,20 @@ msgid "Import now from Phantom"
 msgstr "Importar ahora desde Phantom"
 
 #. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__phantom_read_hour
 #: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_read_hour
-#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_read_hour
 msgid "Import time"
 msgstr "Hora de importación"
 
 #. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__phantom_timezone
 #: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_timezone
-#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_timezone
 msgid "Import timezone"
 msgstr "Zona horaria de importación"
 
 #. module: phantom_connector
 #: model:ir.actions.act_window,name:phantom_connector.phantom_invoice_action
 #: model:ir.ui.menu,name:phantom_connector.menu_phantom_invoice
-#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
 msgid "Invoices"
 msgstr "Facturas"
 
@@ -306,28 +316,30 @@ msgid "Invoices imported from Phantom show up here."
 msgstr "Acá aparecen las facturas importadas desde Phantom."
 
 #. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__invoices_last_month_count
+#. odoo-javascript
+#: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
 msgid "Invoices last month"
 msgstr "Facturas mes anterior"
 
 #. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__invoices_this_month_count
+#. odoo-javascript
+#: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
 msgid "Invoices this month"
 msgstr "Facturas mes actual"
 
 #. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__write_uid
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__write_uid
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__write_uid
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__write_uid
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__write_uid
 msgid "Last Updated by"
 msgstr "Última actualización por"
 
 #. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__write_date
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__write_date
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__write_date
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__write_date
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__write_date
 msgid "Last Updated on"
 msgstr "Última actualización el"
 
@@ -337,28 +349,15 @@ msgid "Last automatic import (local date)"
 msgstr "Última importación automática (fecha local)"
 
 #. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__last_creation_datetime
+#. odoo-javascript
+#: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
 #: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_last_creation_date
 msgid "Last document creation from Phantom"
 msgstr "Última creación de comprobantes desde Phantom"
 
 #. module: phantom_connector
-#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
-msgid "Last month (amount)"
-msgstr "Mes anterior (importe)"
-
-#. module: phantom_connector
-#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
-msgid "Last month (count)"
-msgstr "Mes anterior (cantidad)"
-
-#. module: phantom_connector
-#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
-msgid "Last runs"
-msgstr "Últimas corridas"
-
-#. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__last_read_datetime
+#. odoo-javascript
+#: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
 #: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_last_read_datetime
 msgid "Last successful Phantom read"
 msgstr "Última lectura exitosa de Phantom"
@@ -377,7 +376,6 @@ msgstr ""
 
 #. module: phantom_connector
 #: model:ir.model.fields,help:phantom_connector.field_res_company__phantom_read_hour
-#: model:ir.model.fields,help:phantom_connector.field_res_config_settings__phantom_read_hour
 msgid ""
 "Local time of day (in the timezone above) at which the automatic import cron"
 " runs for this company, once per day. Only used in automatic processing "
@@ -388,9 +386,16 @@ msgstr ""
 "modo de procesamiento automático."
 
 #. module: phantom_connector
+#: model:ir.model.fields.selection,name:phantom_connector.selection__phantom_settings_wizard__phantom_processing_mode__manual
 #: model:ir.model.fields.selection,name:phantom_connector.selection__res_company__phantom_processing_mode__manual
 msgid "Manual"
 msgstr "Manual"
+
+#. module: phantom_connector
+#. odoo-javascript
+#: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
+msgid "Never"
+msgstr "Nunca"
 
 #. module: phantom_connector
 #: model_terms:ir.actions.act_window,help:phantom_connector.phantom_invoice_action
@@ -421,24 +426,39 @@ msgstr "Medio de pago"
 #. module: phantom_connector
 #: model:ir.model.fields.selection,name:phantom_connector.selection__phantom_invoice__state__pending
 #: model:ir.model.fields.selection,name:phantom_connector.selection__phantom_receipt__state__pending
-#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_search_view
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_search_view
 msgid "Pending"
 msgstr "Pendiente"
 
 #. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__invoices_pending_count
+#. odoo-python
+#: code:addons/phantom_connector/models/phantom_dashboard.py:0
+msgid "Pending Invoices"
+msgstr "Facturas pendientes"
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/models/phantom_dashboard.py:0
+msgid "Pending Receipts"
+msgstr "Recibos pendientes"
+
+#. module: phantom_connector
+#. odoo-javascript
+#: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
 msgid "Pending invoices"
 msgstr "Facturas pendientes"
 
 #. module: phantom_connector
-#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__receipts_pending_count
+#. odoo-javascript
+#: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
 msgid "Pending receipts"
 msgstr "Recibos pendientes"
 
 #. module: phantom_connector
+#: model:ir.module.category,name:phantom_connector.module_category_phantom
 #: model:ir.ui.menu,name:phantom_connector.menu_phantom_root
+#: model:res.groups.privilege,name:phantom_connector.res_groups_privilege_phantom
 msgid "Phantom"
 msgstr "Phantom"
 
@@ -480,8 +500,8 @@ msgid "Phantom 'Tipo_Comp' (A, B, C)."
 msgstr "'Tipo_Comp' de Phantom (A, B, C)."
 
 #. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__phantom_url
 #: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_url
-#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_url
 msgid "Phantom API URL"
 msgstr "URL de la API de Phantom"
 
@@ -494,21 +514,20 @@ msgstr ""
 "Phantom."
 
 #. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__phantom_password
 #: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_password
-#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_password
 msgid "Phantom API password"
 msgstr "Contraseña de la API de Phantom"
 
 #. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__phantom_user
 #: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_user
-#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_user
 msgid "Phantom API user"
 msgstr "Usuario de la API de Phantom"
 
 #. module: phantom_connector
-#: model:ir.actions.act_window,name:phantom_connector.phantom_dashboard_action
+#: model:ir.actions.client,name:phantom_connector.phantom_dashboard_action
 #: model:ir.model,name:phantom_connector.model_phantom_dashboard
-#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
 msgid "Phantom Dashboard"
 msgstr "Tablero de Phantom"
 
@@ -543,6 +562,13 @@ msgstr "Recibo Phantom (staging)"
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_search_view
 msgid "Phantom Receipts"
 msgstr "Recibos Phantom"
+
+#. module: phantom_connector
+#: model:ir.actions.act_window,name:phantom_connector.phantom_settings_wizard_action
+#: model:ir.model,name:phantom_connector.model_phantom_settings_wizard
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_settings_wizard_form_view
+msgid "Phantom Settings"
+msgstr "Ajustes de Phantom"
 
 #. module: phantom_connector
 #: model:ir.model,name:phantom_connector.model_phantom_staging_mixin
@@ -584,11 +610,6 @@ msgid "Phantom import finished"
 msgstr "Importación de Phantom finalizada"
 
 #. module: phantom_connector
-#: model_terms:ir.ui.view,arch_db:phantom_connector.res_config_settings_view_form
-msgid "Phantom integration"
-msgstr "Integración con Phantom"
-
-#. module: phantom_connector
 #. odoo-python
 #: code:addons/phantom_connector/models/res_company.py:0
 msgid "Phantom integration is not enabled for %(company)s."
@@ -625,8 +646,8 @@ msgid "Processed"
 msgstr "Procesado"
 
 #. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__phantom_processing_mode
 #: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_processing_mode
-#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_processing_mode
 msgid "Processing mode"
 msgstr "Modo de procesamiento"
 
@@ -645,6 +666,16 @@ msgstr "Acá aparecen los recibos importados desde Phantom."
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__reference
 msgid "Reference"
 msgstr "Referencia"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_settings_wizard_form_view
+msgid "Save"
+msgstr "Guardar"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_settings_wizard_form_view
+msgid "Schedule"
+msgstr "Programación"
 
 #. module: phantom_connector
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__due_date_2
@@ -676,8 +707,8 @@ msgid "Status"
 msgstr "Estado"
 
 #. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__phantom_sweep_window_days
 #: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_sweep_window_days
-#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_sweep_window_days
 msgid "Sweep window (days)"
 msgstr "Ventana de barrido (días)"
 
@@ -692,27 +723,6 @@ msgstr "Importe de impuestos"
 msgid "The automatic Phantom import failed for %(company)s: %(error)s"
 msgstr ""
 "Falló la importación automática de Phantom para %(company)s: %(error)s"
-
-#. module: phantom_connector
-#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
-msgid "This month (amount)"
-msgstr "Mes actual (importe)"
-
-#. module: phantom_connector
-#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
-msgid "This month (count)"
-msgstr "Mes actual (cantidad)"
-
-#. module: phantom_connector
-#: model:ir.model.fields,help:phantom_connector.field_res_config_settings__phantom_timezone
-msgid ""
-"Timezone used to evaluate 'Import time' above, for the automatic processing "
-"mode. Never assumed from the server; set it explicitly if it is not "
-"suggested automatically when Phantom is enabled."
-msgstr ""
-"Huso horario usado para evaluar la 'Hora de importación' de arriba, para el "
-"modo de procesamiento automático. Nunca se asume del servidor; configuralo "
-"explícitamente si no se sugiere automáticamente al habilitar Phantom."
 
 #. module: phantom_connector
 #: model:ir.model.fields,help:phantom_connector.field_res_company__phantom_timezone
@@ -755,6 +765,11 @@ msgid "Untaxed amount"
 msgstr "Importe neto"
 
 #. module: phantom_connector
+#: model:res.groups,name:phantom_connector.group_phantom_user
+msgid "User"
+msgstr "Usuario"
+
+#. module: phantom_connector
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_form_view
 msgid "Voucher"
@@ -780,6 +795,6 @@ msgid "Voucher number"
 msgstr "Número de comprobante"
 
 #. module: phantom_connector
-#: model_terms:ir.ui.view,arch_db:phantom_connector.res_config_settings_view_form
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_settings_wizard_form_view
 msgid "http://IPPHANTOM/Includes/CRM/API_CRM.php"
 msgstr "http://IPPHANTOM/Includes/CRM/API_CRM.php"

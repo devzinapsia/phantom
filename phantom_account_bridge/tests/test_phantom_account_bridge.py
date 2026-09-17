@@ -68,6 +68,7 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
         cls.env.user.write({
             "company_ids": [Command.link(cls.company.id)],
             "company_id": cls.company.id,
+            "group_ids": [Command.link(cls.env.ref("phantom_connector.group_phantom_manager").id)],
         })
         cls.env = cls.env(context=dict(cls.env.context, allowed_company_ids=[cls.company.id]))
         cls.company_data = cls.collect_company_accounting_data(cls.company)
@@ -85,7 +86,9 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
         cls.classification = cls.env["account.move.classification"].create({
             "name": "Phantom",
         })
-        cls.company.write({
+        # sudo(): phantom_password is restricted to group_phantom_manager,
+        # which this test's default company-admin user isn't a member of.
+        cls.company.sudo().write({
             "phantom_enabled": True,
             "phantom_url": "http://phantom.example/api",
             "phantom_user": "api_user",
