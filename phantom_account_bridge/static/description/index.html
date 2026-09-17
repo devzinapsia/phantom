@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Phantom Account Bridge - Zinapsia</title>
+</head>
+<body>
+    <section class="oe_container">
+        <div class="oe_row oe_spaced">
+            <div class="oe_span12">
+                <h2 class="oe_slogan" style="color: #714B67; font-weight: bold;">Phantom Account Bridge</h2>
+                <h3 class="oe_slogan">Create real invoices, receipts and reconciliations from Phantom staging data</h3>
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container">
+        <div class="oe_row oe_spaced">
+            <div class="oe_span12">
+                <p class="oe_mt32" style="font-size: 1.2em; text-align: justify;">
+                    Turns the invoices and receipts imported by
+                    phantom_connector into real Argentine account.move and
+                    account.payment records, matching customers by CUIT/DNI,
+                    applying the right VAT per item, and reconciling
+                    payments against their associated invoice automatically.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container oe_dark">
+        <div class="oe_row oe_spaced">
+            <div class="oe_span12">
+                <h3 class="oe_mt32" style="color: #714B67;">Key Features</h3>
+                <ul style="list-style-type: square; line-height: 2;">
+                    <li><strong>Correct AR document types:</strong> Factura/NC/ND mapped to the right move_type and l10n_latam document type, letter included.</li>
+                    <li><strong>Per-item VAT:</strong> each Detalle item's tax percentage is matched to a real sale tax, not ignored.</li>
+                    <li><strong>Safe customer matching:</strong> by identification type + number, reusing existing contacts without ever overwriting them.</li>
+                    <li><strong>Automatic reconciliation:</strong> a receipt linked to an invoice gets reconciled as soon as both exist, retried across runs if needed.</li>
+                    <li><strong>Full traceability:</strong> smart buttons in both directions, staging record to document and back.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

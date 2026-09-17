@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="phantom_receipt_form_view" model="ir.ui.view">
+        <field name="name">phantom.receipt.form.inherit.phantom.account.bridge</field>
+        <field name="model">phantom.receipt</field>
+        <field name="inherit_id" ref="phantom_connector.phantom_receipt_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_view_account_payment" type="object" class="oe_stat_button"
+                        icon="fa-pencil-square-o" invisible="not account_payment_id">
+                        <field name="account_payment_id" widget="statinfo" string="Receipt"/>
+                    </button>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
