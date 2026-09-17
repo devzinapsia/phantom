@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="phantom_import_wizard_form_view" model="ir.ui.view">
+        <field name="name">phantom.import.wizard.form</field>
+        <field name="model">phantom.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import now from Phantom">
+                <group>
+                    <field name="company_id" options="{'no_create': True}"/>
+                </group>
+                <footer>
+                    <button name="action_import_now" type="object" string="Import now" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="phantom_import_wizard_action" model="ir.actions.act_window">
+        <field name="name">Import now</field>
+        <field name="res_model">phantom.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

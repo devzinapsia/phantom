@@ -1,0 +1,785 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* phantom_connector
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-17 19:30+0000\n"
+"PO-Revision-Date: 2026-09-17 19:30+0000\n"
+"Last-Translator: Zinapsia\n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. module: phantom_connector
+#: model:ir.model.constraint,message:phantom_connector.constraint_phantom_invoice_phantom_idt_company_uniq
+msgid ""
+"A Phantom invoice with this transaction ID already exists for this company."
+msgstr ""
+"Ya existe una factura de Phantom con este ID de transacción para esta "
+"compañía."
+
+#. module: phantom_connector
+#: model:ir.model.constraint,message:phantom_connector.constraint_phantom_receipt_phantom_idt_company_uniq
+msgid ""
+"A Phantom receipt with this transaction ID already exists for this company."
+msgstr ""
+"Ya existe un recibo de Phantom con este ID de transacción para esta "
+"compañía."
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__address
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__address
+msgid "Address"
+msgstr "Dirección"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_form_view
+msgid "Amount"
+msgstr "Importe"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__invoices_last_month_amount
+msgid "Amount last month"
+msgstr "Importe mes anterior"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__invoices_this_month_amount
+msgid "Amount this month"
+msgstr "Importe mes actual"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+msgid "Amounts"
+msgstr "Importes"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__associated_receipt_number
+msgid "Associated receipt number"
+msgstr "Número de recibo asociado"
+
+#. module: phantom_connector
+#: model:ir.model.fields.selection,name:phantom_connector.selection__res_company__phantom_processing_mode__automatic
+msgid "Automatic"
+msgstr "Automático"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_import_wizard_form_view
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__city
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__city
+msgid "City"
+msgstr "Ciudad"
+
+#. module: phantom_connector
+#: model:ir.model,name:phantom_connector.model_res_company
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__company_id
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__company_id
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__company_id
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__company_id
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_search_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_search_view
+msgid "Company"
+msgstr "Compañía"
+
+#. module: phantom_connector
+#: model:ir.model,name:phantom_connector.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/models/phantom_api_client.py:0
+msgid "Could not reach Phantom at %(url)s: %(error)s"
+msgstr "No se pudo conectar con Phantom en %(url)s: %(error)s"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__create_uid
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__create_uid
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__create_uid
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__create_date
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__create_date
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__create_date
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__currency_id
+msgid "Currency"
+msgstr "Moneda"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__currency_code
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__currency_code
+msgid "Currency code"
+msgstr "Código de moneda"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_form_view
+msgid "Customer"
+msgstr "Cliente"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__customer_document
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__customer_document
+msgid "Customer document number"
+msgstr "Número de documento del cliente"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__customer_doc_type
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__customer_doc_type
+msgid "Customer document type"
+msgstr "Tipo de documento del cliente"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__partner_name
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__partner_name
+msgid "Customer name"
+msgstr "Nombre del cliente"
+
+#. module: phantom_connector
+#: model:ir.ui.menu,name:phantom_connector.menu_phantom_dashboard
+msgid "Dashboard"
+msgstr "Tablero"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_form_view
+msgid "Detail"
+msgstr "Detalle"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__detail_raw
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__detail_raw
+msgid "Detail (raw)"
+msgstr "Detalle (crudo)"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__display_name
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__display_name
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__display_name
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__display_name
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_staging_mixin__display_name
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__display_name
+#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "Nombre a mostrar"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__doc_type
+msgid "Document type"
+msgstr "Tipo de comprobante"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+msgid "Due dates and imputation"
+msgstr "Vencimientos e imputación"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_enabled
+#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_enabled
+msgid "Enable Phantom integration"
+msgstr "Habilitar integración con Phantom"
+
+#. module: phantom_connector
+#: model:ir.model.fields.selection,name:phantom_connector.selection__phantom_invoice__state__error
+#: model:ir.model.fields.selection,name:phantom_connector.selection__phantom_receipt__state__error
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_search_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_form_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_search_view
+msgid "Error"
+msgstr "Error"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__error_message
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__error_message
+msgid "Error message"
+msgstr "Mensaje de error"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__exchange_rate
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__exchange_rate
+msgid "Exchange rate"
+msgstr "Cotización"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__due_date_1
+msgid "First due date"
+msgstr "Primer vencimiento"
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_res_company__phantom_sweep_window_days
+#: model:ir.model.fields,help:phantom_connector.field_res_config_settings__phantom_sweep_window_days
+msgid ""
+"How many days back are re-queried on every import run, to catch vouchers "
+"Phantom loaded late or modified after their own date."
+msgstr ""
+"Cuántos días hacia atrás se vuelven a consultar en cada corrida de "
+"importación, para capturar comprobantes que Phantom cargó tarde o modificó "
+"después de su propia fecha."
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__id
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__id
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__id
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__id
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_staging_mixin__id
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__id
+#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__id
+msgid "ID"
+msgstr "ID"
+
+#. module: phantom_connector
+#: model:ir.model,name:phantom_connector.model_phantom_import_wizard
+msgid "Import Now from Phantom"
+msgstr "Importar ahora desde Phantom"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.res_config_settings_view_form
+msgid ""
+"Import invoices and receipts from the Phantom billing/collections system"
+msgstr ""
+"Importa facturas y recibos desde el sistema de facturación/cobranzas Phantom"
+
+#. module: phantom_connector
+#: model:ir.actions.act_window,name:phantom_connector.phantom_import_wizard_action
+#: model:ir.ui.menu,name:phantom_connector.menu_phantom_import_now
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_import_wizard_form_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.res_config_settings_view_form
+msgid "Import now"
+msgstr "Importar ahora"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_import_wizard_form_view
+msgid "Import now from Phantom"
+msgstr "Importar ahora desde Phantom"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_read_hour
+#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_read_hour
+msgid "Import time"
+msgstr "Hora de importación"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_timezone
+#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_timezone
+msgid "Import timezone"
+msgstr "Zona horaria de importación"
+
+#. module: phantom_connector
+#: model:ir.actions.act_window,name:phantom_connector.phantom_invoice_action
+#: model:ir.ui.menu,name:phantom_connector.menu_phantom_invoice
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
+msgid "Invoices"
+msgstr "Facturas"
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/wizards/phantom_import_wizard.py:0
+msgid "Invoices and receipts for %(company)s were imported from Phantom."
+msgstr "Se importaron facturas y recibos de %(company)s desde Phantom."
+
+#. module: phantom_connector
+#: model_terms:ir.actions.act_window,help:phantom_connector.phantom_invoice_action
+msgid "Invoices imported from Phantom show up here."
+msgstr "Acá aparecen las facturas importadas desde Phantom."
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__invoices_last_month_count
+msgid "Invoices last month"
+msgstr "Facturas mes anterior"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__invoices_this_month_count
+msgid "Invoices this month"
+msgstr "Facturas mes actual"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__write_uid
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__write_uid
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__write_uid
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__write_date
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__write_date
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__write_date
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_last_read_date
+msgid "Last automatic import (local date)"
+msgstr "Última importación automática (fecha local)"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__last_creation_datetime
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_last_creation_date
+msgid "Last document creation from Phantom"
+msgstr "Última creación de comprobantes desde Phantom"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
+msgid "Last month (amount)"
+msgstr "Mes anterior (importe)"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
+msgid "Last month (count)"
+msgstr "Mes anterior (cantidad)"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
+msgid "Last runs"
+msgstr "Últimas corridas"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__last_read_datetime
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_last_read_datetime
+msgid "Last successful Phantom read"
+msgstr "Última lectura exitosa de Phantom"
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_res_company__phantom_last_read_date
+msgid ""
+"Local date (in the timezone above) the automatic cron last ran for this "
+"company. Used only to avoid running twice on the same local day; manual "
+"'Import now' runs do not change it."
+msgstr ""
+"Fecha local (en el huso horario de arriba) en que corrió por última vez el "
+"cron automático para esta compañía. Se usa solo para evitar correr dos veces"
+" el mismo día local; las corridas manuales de 'Importar ahora' no la "
+"modifican."
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_res_company__phantom_read_hour
+#: model:ir.model.fields,help:phantom_connector.field_res_config_settings__phantom_read_hour
+msgid ""
+"Local time of day (in the timezone above) at which the automatic import cron"
+" runs for this company, once per day. Only used in automatic processing "
+"mode."
+msgstr ""
+"Hora local del día (en el huso horario de arriba) en la que corre el cron de"
+" importación automática para esta compañía, una vez por día. Solo se usa en "
+"modo de procesamiento automático."
+
+#. module: phantom_connector
+#: model:ir.model.fields.selection,name:phantom_connector.selection__res_company__phantom_processing_mode__manual
+msgid "Manual"
+msgstr "Manual"
+
+#. module: phantom_connector
+#: model_terms:ir.actions.act_window,help:phantom_connector.phantom_invoice_action
+msgid "No Phantom invoices yet"
+msgstr "Todavía no hay facturas de Phantom"
+
+#. module: phantom_connector
+#: model_terms:ir.actions.act_window,help:phantom_connector.phantom_receipt_action
+msgid "No Phantom receipts yet"
+msgstr "Todavía no hay recibos de Phantom"
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_phantom_invoice__currency_code
+#: model:ir.model.fields,help:phantom_connector.field_phantom_receipt__currency_code
+msgid "PES or USD, as reported by Phantom."
+msgstr "PES o USD, según lo informado por Phantom."
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_form_view
+msgid "Payment"
+msgstr "Pago"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__payment_method
+msgid "Payment method"
+msgstr "Medio de pago"
+
+#. module: phantom_connector
+#: model:ir.model.fields.selection,name:phantom_connector.selection__phantom_invoice__state__pending
+#: model:ir.model.fields.selection,name:phantom_connector.selection__phantom_receipt__state__pending
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_search_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_search_view
+msgid "Pending"
+msgstr "Pendiente"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__invoices_pending_count
+msgid "Pending invoices"
+msgstr "Facturas pendientes"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_dashboard__receipts_pending_count
+msgid "Pending receipts"
+msgstr "Recibos pendientes"
+
+#. module: phantom_connector
+#: model:ir.ui.menu,name:phantom_connector.menu_phantom_root
+msgid "Phantom"
+msgstr "Phantom"
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_phantom_invoice__associated_receipt_number
+msgid ""
+"Phantom 'Comp_Asociado': set only when the payment was imputed to this "
+"voucher rather than left on account."
+msgstr ""
+"'Comp_Asociado' de Phantom: se completa solo cuando el pago fue imputado a "
+"este comprobante en vez de quedar a cuenta."
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_phantom_receipt__detail_raw
+msgid ""
+"Phantom 'Detalle', kept as-is. May contain the literal 'Pago Parcial de "
+"Comprobante' notice for an open/partial payment."
+msgstr ""
+"'Detalle' de Phantom, tal cual viene. Puede contener la leyenda literal "
+"'Pago Parcial de Comprobante' para un pago abierto o parcial."
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_phantom_invoice__detail_raw
+msgid ""
+"Phantom 'Detalle', kept as-is: 'ID_ART, DESCRIPTION, NET, %TAX, TOTAL;' "
+"repeated per item, separated by ';'."
+msgstr ""
+"'Detalle' de Phantom, tal cual viene: 'ID_ART, DESCRIPCIÓN, NETO, %IMP, "
+"TOTAL;' repetido por ítem, separado por ';'."
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_phantom_invoice__doc_type
+msgid "Phantom 'Tipo': Factura, NC or ND."
+msgstr "'Tipo' de Phantom: Factura, NC o ND."
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_phantom_invoice__comp_letter
+msgid "Phantom 'Tipo_Comp' (A, B, C)."
+msgstr "'Tipo_Comp' de Phantom (A, B, C)."
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_url
+#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_url
+msgid "Phantom API URL"
+msgstr "URL de la API de Phantom"
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/models/phantom_api_client.py:0
+msgid "Phantom API URL, user and password must all be configured."
+msgstr ""
+"Deben estar configurados la URL, el usuario y la contraseña de la API de "
+"Phantom."
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_password
+#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_password
+msgid "Phantom API password"
+msgstr "Contraseña de la API de Phantom"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_user
+#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_user
+msgid "Phantom API user"
+msgstr "Usuario de la API de Phantom"
+
+#. module: phantom_connector
+#: model:ir.actions.act_window,name:phantom_connector.phantom_dashboard_action
+#: model:ir.model,name:phantom_connector.model_phantom_dashboard
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
+msgid "Phantom Dashboard"
+msgstr "Tablero de Phantom"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+msgid "Phantom Invoice"
+msgstr "Factura Phantom"
+
+#. module: phantom_connector
+#: model:ir.model,name:phantom_connector.model_phantom_invoice
+msgid "Phantom Invoice (staging)"
+msgstr "Factura Phantom (staging)"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_list_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_search_view
+msgid "Phantom Invoices"
+msgstr "Facturas Phantom"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_form_view
+msgid "Phantom Receipt"
+msgstr "Recibo Phantom"
+
+#. module: phantom_connector
+#: model:ir.model,name:phantom_connector.model_phantom_receipt
+msgid "Phantom Receipt (staging)"
+msgstr "Recibo Phantom (staging)"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_list_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_search_view
+msgid "Phantom Receipts"
+msgstr "Recibos Phantom"
+
+#. module: phantom_connector
+#: model:ir.model,name:phantom_connector.model_phantom_staging_mixin
+msgid "Phantom Staging Upsert Mixin"
+msgstr "Mixin de upsert de staging de Phantom"
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/models/phantom_api_client.py:0
+msgid ""
+"Phantom authentication failed for user %(api_user)s: no token returned. "
+"Check the API user/password."
+msgstr ""
+"Falló la autenticación con Phantom para el usuario %(api_user)s: no se "
+"recibió token. Verificá el usuario/contraseña de la API."
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__branch_id_phantom
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__branch_id_phantom
+msgid "Phantom branch ID"
+msgstr "ID de sucursal Phantom"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__phantom_customer_id
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__phantom_customer_id
+msgid "Phantom customer ID"
+msgstr "ID de cliente Phantom"
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/models/res_company.py:0
+msgid "Phantom import failed for %(company)s"
+msgstr "Falló la importación de Phantom para %(company)s"
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/wizards/phantom_import_wizard.py:0
+msgid "Phantom import finished"
+msgstr "Importación de Phantom finalizada"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.res_config_settings_view_form
+msgid "Phantom integration"
+msgstr "Integración con Phantom"
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/models/res_company.py:0
+msgid "Phantom integration is not enabled for %(company)s."
+msgstr "La integración con Phantom no está habilitada para %(company)s."
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/models/phantom_api_client.py:0
+msgid "Phantom returned a non-JSON response from %(url)s."
+msgstr "Phantom devolvió una respuesta que no es JSON desde %(url)s."
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__phantom_idt
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__phantom_idt
+msgid "Phantom transaction ID"
+msgstr "ID de transacción Phantom"
+
+#. module: phantom_connector
+#: model:ir.actions.server,name:phantom_connector.ir_cron_phantom_import_ir_actions_server
+msgid "Phantom: automatic import"
+msgstr "Phantom: importación automática"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__point_of_sale
+msgid "Point of sale"
+msgstr "Punto de venta"
+
+#. module: phantom_connector
+#: model:ir.model.fields.selection,name:phantom_connector.selection__phantom_invoice__state__processed
+#: model:ir.model.fields.selection,name:phantom_connector.selection__phantom_receipt__state__processed
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_search_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_search_view
+msgid "Processed"
+msgstr "Procesado"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_processing_mode
+#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_processing_mode
+msgid "Processing mode"
+msgstr "Modo de procesamiento"
+
+#. module: phantom_connector
+#: model:ir.actions.act_window,name:phantom_connector.phantom_receipt_action
+#: model:ir.ui.menu,name:phantom_connector.menu_phantom_receipt
+msgid "Receipts"
+msgstr "Recibos"
+
+#. module: phantom_connector
+#: model_terms:ir.actions.act_window,help:phantom_connector.phantom_receipt_action
+msgid "Receipts imported from Phantom show up here."
+msgstr "Acá aparecen los recibos importados desde Phantom."
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__reference
+msgid "Reference"
+msgstr "Referencia"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__due_date_2
+msgid "Second due date"
+msgstr "Segundo vencimiento"
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_res_company__phantom_last_read_datetime
+msgid "Set after every successful import, manual or automatic."
+msgstr "Se completa después de cada importación exitosa, manual o automática."
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_res_company__phantom_last_creation_date
+msgid ""
+"Set by phantom_account_bridge when it creates invoices/receipts from staging"
+" data. Empty ('Never') if that module is not installed, or nothing has been "
+"created yet."
+msgstr ""
+"Lo completa phantom_account_bridge cuando crea facturas/recibos a partir de "
+"los datos de staging. Vacío ('Nunca') si ese módulo no está instalado, o si "
+"todavía no se creó nada."
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__state
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__state
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_search_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_search_view
+msgid "Status"
+msgstr "Estado"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_res_company__phantom_sweep_window_days
+#: model:ir.model.fields,field_description:phantom_connector.field_res_config_settings__phantom_sweep_window_days
+msgid "Sweep window (days)"
+msgstr "Ventana de barrido (días)"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__amount_tax
+msgid "Tax amount"
+msgstr "Importe de impuestos"
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/models/res_company.py:0
+msgid "The automatic Phantom import failed for %(company)s: %(error)s"
+msgstr ""
+"Falló la importación automática de Phantom para %(company)s: %(error)s"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
+msgid "This month (amount)"
+msgstr "Mes actual (importe)"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_dashboard_form_view
+msgid "This month (count)"
+msgstr "Mes actual (cantidad)"
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_res_config_settings__phantom_timezone
+msgid ""
+"Timezone used to evaluate 'Import time' above, for the automatic processing "
+"mode. Never assumed from the server; set it explicitly if it is not "
+"suggested automatically when Phantom is enabled."
+msgstr ""
+"Huso horario usado para evaluar la 'Hora de importación' de arriba, para el "
+"modo de procesamiento automático. Nunca se asume del servidor; configuralo "
+"explícitamente si no se sugiere automáticamente al habilitar Phantom."
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_res_company__phantom_timezone
+msgid ""
+"Timezone used to evaluate 'Import time' below, for the automatic processing "
+"mode. Never assumed from the server; set it explicitly if it is not "
+"suggested automatically when Phantom is enabled."
+msgstr ""
+"Huso horario usado para evaluar la 'Hora de importación' de abajo, para el "
+"modo de procesamiento automático. Nunca se asume del servidor; configuralo "
+"explícitamente si no se sugiere automáticamente al habilitar Phantom."
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_list_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_list_view
+msgid "Total"
+msgstr "Total"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__amount_total
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__amount_total
+msgid "Total amount"
+msgstr "Importe total"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__transaction_date
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__transaction_date
+msgid "Transaction date"
+msgstr "Fecha de transacción"
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/models/phantom_api_client.py:0
+msgid "Unexpected response shape from Phantom for '%(action)s'."
+msgstr "Forma de respuesta inesperada de Phantom para '%(action)s'."
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__amount_untaxed
+msgid "Untaxed amount"
+msgstr "Importe neto"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_form_view
+msgid "Voucher"
+msgstr "Comprobante"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__invoice_date
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__receipt_date
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_search_view
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_receipt_search_view
+msgid "Voucher date"
+msgstr "Fecha del comprobante"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__comp_letter
+msgid "Voucher letter"
+msgstr "Letra del comprobante"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__comp_number
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__comp_number
+msgid "Voucher number"
+msgstr "Número de comprobante"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.res_config_settings_view_form
+msgid "http://IPPHANTOM/Includes/CRM/API_CRM.php"
+msgstr "http://IPPHANTOM/Includes/CRM/API_CRM.php"

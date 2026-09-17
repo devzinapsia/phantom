@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="phantom_invoice_list_view" model="ir.ui.view">
+        <field name="name">phantom.invoice.list</field>
+        <field name="model">phantom.invoice</field>
+        <field name="arch" type="xml">
+            <list string="Phantom Invoices" create="0">
+                <field name="invoice_date"/>
+                <field name="doc_type"/>
+                <field name="comp_letter"/>
+                <field name="point_of_sale"/>
+                <field name="comp_number"/>
+                <field name="partner_name"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="currency_code"/>
+                <field name="company_id" optional="hide" groups="base.group_multi_company"/>
+                <field name="transaction_date" optional="hide"/>
+                <field name="phantom_idt" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'processed'"
+                    decoration-info="state == 'pending'" decoration-danger="state == 'error'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="phantom_invoice_form_view" model="ir.ui.view">
+        <field name="name">phantom.invoice.form</field>
+        <field name="model">phantom.invoice</field>
+        <field name="arch" type="xml">
+            <form string="Phantom Invoice" create="0" edit="0">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="comp_letter"/> <field name="point_of_sale"/>-<field name="comp_number"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Voucher" name="voucher">
+                            <field name="phantom_idt"/>
+                            <field name="doc_type"/>
+                            <field name="invoice_date"/>
+                            <field name="transaction_date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="state"/>
+                        </group>
+                        <group string="Customer" name="customer">
+                            <field name="phantom_customer_id"/>
+                            <field name="partner_name"/>
+                            <field name="customer_doc_type"/>
+                            <field name="customer_document"/>
+                            <field name="address"/>
+                            <field name="city"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Amounts" name="amounts">
+                            <field name="currency_code"/>
+                            <field name="exchange_rate"/>
+                            <field name="amount_untaxed"/>
+                            <field name="amount_tax"/>
+                            <field name="amount_total"/>
+                        </group>
+                        <group string="Due dates and imputation" name="dues">
+                            <field name="due_date_1"/>
+                            <field name="due_date_2"/>
+                            <field name="associated_receipt_number"/>
+                            <field name="branch_id_phantom"/>
+                        </group>
+                    </group>
+                    <group string="Detail" name="detail">
+                        <field name="detail_raw" nolabel="1"/>
+                    </group>
+                    <group string="Error" name="error" invisible="state != 'error'">
+                        <field name="error_message" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="phantom_invoice_search_view" model="ir.ui.view">
+        <field name="name">phantom.invoice.search</field>
+        <field name="model">phantom.invoice</field>
+        <field name="arch" type="xml">
+            <search string="Phantom Invoices">
+                <field name="comp_number"/>
+                <field name="partner_name"/>
+                <field name="phantom_idt"/>
+                <field name="company_id"/>
+                <filter string="Voucher date" name="invoice_date" date="invoice_date"/>
+                <separator/>
+                <filter string="Pending" name="pending" domain="[('state', '=', 'pending')]"/>
+                <filter string="Processed" name="processed" domain="[('state', '=', 'processed')]"/>
+                <filter string="Error" name="error" domain="[('state', '=', 'error')]"/>
+                <!-- Group By -->
+                <group>
+                    <filter string="Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Company" name="group_by_company" context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="phantom_invoice_action" model="ir.actions.act_window">
+        <field name="name">Invoices</field>
+        <field name="res_model">phantom.invoice</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_pending': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Phantom invoices yet
+            </p>
+            <p>
+                Invoices imported from Phantom show up here.
+            </p>
+        </field>
+    </record>
+</odoo>

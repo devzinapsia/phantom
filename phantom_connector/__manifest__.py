@@ -1,0 +1,23 @@
+{
+    "name": "Phantom Connector",
+    "version": "19.0.1.0.0",
+    "summary": "Import invoices and receipts from the Phantom billing/collections API into staging models",
+    "author": "Zinapsia",
+    "website": "https://www.zinapsia.com",
+    "license": "AGPL-3",
+    "category": "Accounting/Accounting",
+    "depends": ["mail"],
+    "data": [
+        "security/ir.model.access.csv",
+        "data/ir_cron_data.xml",
+        "wizards/views/phantom_import_wizard_views.xml",
+        "views/res_config_settings_views.xml",
+        "views/phantom_invoice_views.xml",
+        "views/phantom_receipt_views.xml",
+        "views/phantom_dashboard_views.xml",
+        "views/phantom_menus.xml",
+    ],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
+}

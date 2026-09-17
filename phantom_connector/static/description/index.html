@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Phantom Connector - Zinapsia</title>
+</head>
+<body>
+    <section class="oe_container">
+        <div class="oe_row oe_spaced">
+            <div class="oe_span12">
+                <h2 class="oe_slogan" style="color: #714B67; font-weight: bold;">Phantom Connector</h2>
+                <h3 class="oe_slogan">Import invoices and receipts from the Phantom billing/collections system</h3>
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container">
+        <div class="oe_row oe_spaced">
+            <div class="oe_span12">
+                <p class="oe_mt32" style="font-size: 1.2em; text-align: justify;">
+                    Connects to Phantom's REST API, per company, and keeps a local
+                    staging copy of every invoice, credit note, debit note and
+                    payment receipt it reports. Nothing is transformed into a real
+                    accounting document here -- that is the job of the separate
+                    phantom_account_bridge module, if installed.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="oe_container oe_dark">
+        <div class="oe_row oe_spaced">
+            <div class="oe_span12">
+                <h3 class="oe_mt32" style="color: #714B67;">Key Features</h3>
+                <ul style="list-style-type: square; line-height: 2;">
+                    <li><strong>Per-company credentials:</strong> each company can point at its own Phantom instance.</li>
+                    <li><strong>Manual or automatic:</strong> trigger imports by hand, or schedule a daily run at a configured local time.</li>
+                    <li><strong>Rolling sweep window:</strong> every run re-queries the last N days, to catch vouchers Phantom loaded late.</li>
+                    <li><strong>Safe upsert:</strong> re-importing the same voucher updates it in place and never reopens one already processed into a real document.</li>
+                    <li><strong>Built-in dashboard:</strong> import volume, pending backlog, and last successful run, at a glance.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
