@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="phantom_dashboard_action" model="ir.actions.client">
+    <!-- Deliberately a new id, not a reuse of the old (pre-19.0.1.1.0)
+         phantom_dashboard_action: that one was an ir.actions.act_window,
+         and Odoo's module loader refuses to re-target an existing xmlid
+         at a different model on upgrade (ParseError: "found record of
+         different model"). The old xmlid is simply absent from this
+         module's data now, so it is cleaned up as orphaned by Odoo's own
+         upgrade mechanism instead of being reused. -->
+    <record id="phantom_dashboard_client_action" model="ir.actions.client">
         <field name="name">Phantom Dashboard</field>
         <field name="tag">phantom_connector.dashboard</field>
     </record>

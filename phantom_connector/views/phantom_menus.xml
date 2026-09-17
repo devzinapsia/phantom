@@ -3,7 +3,7 @@
     <menuitem id="menu_phantom_root" name="Phantom" sequence="90" groups="group_phantom_user"/>
 
     <menuitem id="menu_phantom_dashboard" name="Dashboard"
-        parent="menu_phantom_root" action="phantom_dashboard_action" sequence="10"/>
+        parent="menu_phantom_root" action="phantom_dashboard_client_action" sequence="10"/>
 
     <menuitem id="menu_phantom_invoice" name="Invoices"
         parent="menu_phantom_root" action="phantom_invoice_action" sequence="20"/>
