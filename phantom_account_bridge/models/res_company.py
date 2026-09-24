@@ -70,54 +70,112 @@ class ResCompany(models.Model):
                 )
             company._phantom_create_one()
 
-    def _phantom_create_one(self):
-        self.ensure_one()
-        company = self.sudo()
-        invoice_model = self.env["phantom.invoice"].sudo()
-        receipt_model = self.env["phantom.receipt"].sudo()
-
-        pending_invoices = invoice_model.search([
-            ("company_id", "=", self.id), ("state", "=", "pending"),
-        ])
-        for invoice in pending_invoices:
+    def _phantom_process_invoices(self, invoices):
+        for invoice in invoices:
             try:
-                invoice._phantom_create_document(company)
+                invoice._phantom_create_document(self)
             except Exception as exc:
                 _logger.exception(
                     "Failed to create an account.move from phantom.invoice %s", invoice.id
                 )
                 invoice.write({"state": "error", "error_message": str(exc)})
 
-        pending_receipts = receipt_model.search([
-            ("company_id", "=", self.id), ("state", "=", "pending"),
-        ])
-        for receipt in pending_receipts:
+    def _phantom_process_receipts(self, receipts):
+        for receipt in receipts:
             try:
-                receipt._phantom_create_document(company)
+                receipt._phantom_create_document(self)
             except Exception as exc:
                 _logger.exception(
                     "Failed to create an account.payment from phantom.receipt %s", receipt.id
                 )
                 receipt.write({"state": "error", "error_message": str(exc)})
 
-        # Retry reconciliation for invoices whose associated receipt wasn't
-        # processed yet at creation time -- including ones from this same
-        # run, now that the receipts above have been processed too.
-        retry_invoices = invoice_model.search([
+    def _phantom_retry_reconciliation(self):
+        """Retry reconciliation for invoices whose associated receipt
+        wasn't processed yet at creation time -- including ones from this
+        same run, now that their receipts may have been processed too.
+        """
+        self.ensure_one()
+        retry_invoices = self.env["phantom.invoice"].search([
             ("company_id", "=", self.id), ("pending_reconciliation", "=", True),
         ])
         for invoice in retry_invoices:
             try:
-                invoice._phantom_try_reconcile(company)
+                invoice._phantom_try_reconcile(self)
             except Exception:
                 _logger.exception(
                     "Failed to retry reconciliation for phantom.invoice %s", invoice.id
                 )
 
+    def _phantom_create_one(self):
+        self.ensure_one()
+        company = self.sudo()
+        invoice_model = self.env["phantom.invoice"].sudo()
+        receipt_model = self.env["phantom.receipt"].sudo()
+
+        company._phantom_process_invoices(invoice_model.search([
+            ("company_id", "=", self.id), ("state", "=", "pending"),
+        ]))
+        company._phantom_process_receipts(receipt_model.search([
+            ("company_id", "=", self.id), ("state", "=", "pending"),
+        ]))
+        company._phantom_retry_reconciliation()
         company.write({
             "phantom_last_creation_date": fields.Datetime.now(),
             "phantom_last_creation_run_date": fields.Date.context_today(company),
         })
+
+    def action_phantom_create_batch(self, batch_size=50):
+        """Process up to batch_size pending Phantom records for this
+        company and return progress info -- one bounded chunk of work per
+        call, meant to be looped by the client while it renders a progress
+        bar (same pattern as Odoo's own base_import: the client drives the
+        loop and tracks progress itself, not a background/cron job).
+
+        Same access rules as action_phantom_create() (explicit group
+        check, sudo'd document creation) -- see its docstring.
+        """
+        self.ensure_one()
+        if not self.env.su and not self.env.user.has_group("phantom_connector.group_phantom_user"):
+            raise AccessError(_("You are not allowed to trigger Phantom document creation."))
+        if not self.phantom_enabled:
+            raise UserError(
+                _("Phantom integration is not enabled for %(company)s.", company=self.name)
+            )
+
+        company = self.sudo()
+        invoice_model = self.env["phantom.invoice"].sudo()
+        receipt_model = self.env["phantom.receipt"].sudo()
+
+        pending_invoices = invoice_model.search([
+            ("company_id", "=", self.id), ("state", "=", "pending"),
+        ], limit=batch_size)
+        company._phantom_process_invoices(pending_invoices)
+
+        remaining_slots = batch_size - len(pending_invoices)
+        pending_receipts = receipt_model.browse()
+        if remaining_slots > 0:
+            pending_receipts = receipt_model.search([
+                ("company_id", "=", self.id), ("state", "=", "pending"),
+            ], limit=remaining_slots)
+            company._phantom_process_receipts(pending_receipts)
+
+        remaining = (
+            invoice_model.search_count([("company_id", "=", self.id), ("state", "=", "pending")])
+            + receipt_model.search_count([("company_id", "=", self.id), ("state", "=", "pending")])
+        )
+        done = not remaining
+        if done:
+            company._phantom_retry_reconciliation()
+            company.write({
+                "phantom_last_creation_date": fields.Datetime.now(),
+                "phantom_last_creation_run_date": fields.Date.context_today(company),
+            })
+        return {
+            "processed": len(pending_invoices) + len(pending_receipts),
+            "remaining": remaining,
+            "done": done,
+        }
 
     def _cron_phantom_create(self):
         """Entry point for the automatic-mode creation cron. Companies in

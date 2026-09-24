@@ -330,3 +330,26 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
         })
         with self.assertRaises(AccessError):
             self.company.with_user(user).action_phantom_create()
+
+    def test_batch_create_processes_in_chunks(self):
+        stagings = [
+            self._create_invoice_staging(IDT=f"I{100 + i}", Nro_Comp=f"0000013{8 + i}")
+            for i in range(3)
+        ]
+
+        result = self.company.action_phantom_create_batch(batch_size=2)
+        self.assertEqual(result["processed"], 2)
+        self.assertEqual(result["remaining"], 1)
+        self.assertFalse(result["done"])
+        for staging in stagings:
+            staging.invalidate_recordset()
+        self.assertEqual(sum(1 for s in stagings if s.state == "processed"), 2)
+
+        result = self.company.action_phantom_create_batch(batch_size=2)
+        self.assertEqual(result["processed"], 1)
+        self.assertEqual(result["remaining"], 0)
+        self.assertTrue(result["done"])
+        for staging in stagings:
+            staging.invalidate_recordset()
+        self.assertTrue(all(s.state == "processed" for s in stagings))
+        self.assertTrue(self.company.phantom_last_creation_date)
