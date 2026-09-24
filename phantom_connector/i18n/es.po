@@ -465,11 +465,19 @@ msgstr "Phantom"
 #. module: phantom_connector
 #: model:ir.model.fields,help:phantom_connector.field_phantom_invoice__associated_receipt_number
 msgid ""
-"Phantom 'Comp_Asociado': set only when the payment was imputed to this "
-"voucher rather than left on account."
+"Phantom 'Comp_Pago' (the generic manual calls this field 'Comp_Asociado', "
+"but real API responses use 'Comp_Pago'): set only when the payment was "
+"imputed to this voucher rather than left on account. Kept as raw text -- "
+"seen with a trailing ';' and what looks like a point-of-sale prefix (e.g. "
+"'21-00045210;'), not yet confirmed to always be a single simple value."
 msgstr ""
-"'Comp_Asociado' de Phantom: se completa solo cuando el pago fue imputado a "
-"este comprobante en vez de quedar a cuenta."
+"'Comp_Pago' de Phantom (el manual genérico llama a este campo "
+"'Comp_Asociado', pero las respuestas reales de la API usan 'Comp_Pago'): "
+"se completa solo cuando el pago fue imputado a este comprobante en vez de "
+"quedar a cuenta. Se guarda como texto tal cual -- se observó con un ';' "
+"final y lo que parece un prefijo de punto de venta (por ej. "
+"'21-00045210;'), todavía no confirmado que sea siempre un valor simple "
+"único."
 
 #. module: phantom_connector
 #: model:ir.model.fields,help:phantom_connector.field_phantom_receipt__detail_raw

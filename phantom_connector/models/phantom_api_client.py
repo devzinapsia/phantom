@@ -7,6 +7,7 @@ from odoo import _
 _logger = logging.getLogger(__name__)
 
 DEFAULT_TIMEOUT = 30
+AUTH_ACTION = "autentificar"
 INVOICE_ACTION = "Consultar_Transacciones_Facturacion"
 RECEIPT_ACTION = "Consultar_Transacciones_Pagos"
 
@@ -19,8 +20,16 @@ class PhantomAPIError(Exception):
 
 
 class PhantomAPIClient:
-    """Thin REST client for Phantom API CRM II (query-only endpoints:
-    authentication plus the two 'Consultar_Transacciones_*' actions).
+    """Thin REST client for Phantom's real-world "API CRM" endpoint.
+
+    Confirmed against a working example provided by Phantom support (the
+    generic PDF manual's own PHP example is incomplete: it builds a query
+    string via http_build_query() but never actually sends it, and never
+    mentions the 'action' parameter authentication needs). Every call is
+    a POST with the same parameters duplicated in both the URL query
+    string and a JSON body -- redundant, but that is what the confirmed
+    working example does, so it is replicated exactly rather than
+    "simplified" on an assumption.
 
     Not an Odoo model: it only needs one company's own URL/user/password,
     passed in explicitly by the caller, and has no state Odoo needs to
@@ -43,9 +52,11 @@ class PhantomAPIClient:
         self.timeout = timeout
         self.token = None
 
-    def _get(self, params):
+    def _post(self, query_params, json_body):
         try:
-            response = requests.get(self.url, params=params, timeout=self.timeout)
+            response = requests.post(
+                self.url, params=query_params, json=json_body, timeout=self.timeout,
+            )
             response.raise_for_status()
         except requests.RequestException as exc:
             raise PhantomAPIError(
@@ -62,7 +73,8 @@ class PhantomAPIClient:
         """Obtain and store an auth token, valid for 10 minutes per the
         Phantom API manual.
         """
-        data = self._get({"api_user": self.api_user, "api_pass": self.password})
+        creds = {"api_user": self.api_user, "api_pass": self.password}
+        data = self._post({"action": AUTH_ACTION, **creds}, creds)
         token = data.get("token") if isinstance(data, dict) else None
         if not token:
             raise PhantomAPIError(
@@ -83,7 +95,7 @@ class PhantomAPIClient:
             params["desde"] = desde
         if hasta:
             params["hasta"] = hasta
-        data = self._get(params)
+        data = self._post(params, {"token": self.token})
         if isinstance(data, dict) and not data:
             # Some Phantom deployments return {} instead of [] for an
             # empty result set.

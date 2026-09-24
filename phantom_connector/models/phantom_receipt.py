@@ -50,18 +50,27 @@ class PhantomReceipt(models.Model):
     )
 
     def _phantom_vals_from_row(self, row):
+        # Field names below are confirmed against real API responses, not
+        # just the generic PDF manual, which disagrees with the live
+        # server on several of them (documented per-field below).
         return {
             "comp_number": row.get("Nro_Comp") or False,
-            "receipt_date": row.get("Fecha") or False,
-            "transaction_date": row.get("Fecha_Transaccion") or False,
+            # "Fecha" comes back as a full datetime even though it maps
+            # to a Date field here.
+            "receipt_date": self._phantom_clean_date(row.get("Fecha")),
+            # "Fecha_Transaccion" comes back as a bare date (no time
+            # component) even though it maps to a Datetime field here.
+            "transaction_date": self._phantom_clean_datetime(row.get("Fecha_Transaccion")),
             "phantom_customer_id": row.get("IDA") or False,
             "partner_name": row.get("RS") or False,
             "customer_doc_type": row.get("Doc_Tipo") or False,
             "customer_document": row.get("Documento") or False,
-            "address": row.get("Dirección") or False,
+            # Manual says "Dirección"; the real API uses "Direccion" (no accent).
+            "address": row.get("Direccion") or row.get("Dirección") or False,
             "city": row.get("Ciudad") or False,
             "currency_code": row.get("Moneda") or False,
-            "exchange_rate": row.get("Cotización") or 0.0,
+            # Manual says "Cotización"; the real API uses "Cotizacion" (no accent).
+            "exchange_rate": row.get("Cotizacion") or row.get("Cotización") or 0.0,
             "detail_raw": row.get("Detalle") or False,
             "amount_total": row.get("Importe_Total") or 0.0,
             "payment_method": row.get("Medio_Pago") or False,

@@ -25,6 +25,33 @@ class PhantomStagingMixin(models.AbstractModel):
         """
         raise NotImplementedError
 
+    @staticmethod
+    def _phantom_clean_date(value):
+        """Phantom's real API (confirmed against live responses, not just
+        the generic manual) uses MySQL's zero-date placeholder
+        ('0000-00-00') for an unset date, and some date fields come back
+        with a time component even where only a date is expected here --
+        take just the date part, or False for an empty/placeholder value.
+        """
+        if not value:
+            return False
+        date_part = value[:10]
+        if date_part == "0000-00-00":
+            return False
+        return date_part
+
+    @staticmethod
+    def _phantom_clean_datetime(value):
+        """Some Phantom datetime fields come back as a bare date (no time
+        component); Odoo's ORM expects a full 'YYYY-MM-DD HH:MM:SS' string
+        when writing a Datetime field from a plain string.
+        """
+        if not value:
+            return False
+        if value[:10] == "0000-00-00":
+            return False
+        return value if len(value) > 10 else value + " 00:00:00"
+
     def _phantom_upsert(self, rows, company):
         for row in rows:
             idt = row.get("IDT")

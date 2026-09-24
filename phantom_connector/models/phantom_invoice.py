@@ -44,8 +44,12 @@ class PhantomInvoice(models.Model):
     due_date_2 = fields.Date(string="Second due date")
     associated_receipt_number = fields.Char(
         string="Associated receipt number",
-        help="Phantom 'Comp_Asociado': set only when the payment was "
-        "imputed to this voucher rather than left on account.",
+        help="Phantom 'Comp_Pago' (the generic manual calls this field "
+        "'Comp_Asociado', but real API responses use 'Comp_Pago'): set "
+        "only when the payment was imputed to this voucher rather than "
+        "left on account. Kept as raw text -- seen with a trailing ';' "
+        "and what looks like a point-of-sale prefix (e.g. '21-00045210;'), "
+        "not yet confirmed to always be a single simple value.",
     )
     branch_id_phantom = fields.Char(string="Phantom branch ID")
     state = fields.Selection(
@@ -60,30 +64,44 @@ class PhantomInvoice(models.Model):
     )
 
     def _phantom_vals_from_row(self, row):
+        # Field names below are confirmed against real API responses, not
+        # just the generic PDF manual, which disagrees with the live
+        # server on several of them (documented per-field below).
+        comp_pago = (row.get("Comp_Pago") or row.get("Comp_Asociado") or "").rstrip(";") or False
         return {
             "doc_type": row.get("Tipo") or False,
             "comp_letter": row.get("Tipo_Comp") or False,
-            "point_of_sale": row.get("P_venta") or False,
+            # Manual says "P_venta"; the real API uses "P_Venta".
+            "point_of_sale": row.get("P_Venta") or row.get("P_venta") or False,
             "comp_number": row.get("Nro_Comp") or False,
-            "invoice_date": row.get("Fecha") or False,
-            "transaction_date": row.get("Fecha_Transaccion") or False,
+            # "Fecha" comes back as a full datetime (e.g. "2026-09-01
+            # 10:02:14") even though it maps to a Date field here.
+            "invoice_date": self._phantom_clean_date(row.get("Fecha")),
+            # "Fecha_Transaccion" comes back as a bare date (no time
+            # component) even though it maps to a Datetime field here.
+            "transaction_date": self._phantom_clean_datetime(row.get("Fecha_Transaccion")),
             "phantom_customer_id": row.get("IDA") or False,
             "partner_name": row.get("RS") or False,
             "customer_doc_type": row.get("Doc_Tipo") or False,
             "customer_document": row.get("Documento") or False,
-            "address": row.get("Dirección") or False,
+            # Manual says "Dirección"; the real API uses "Direccion" (no accent).
+            "address": row.get("Direccion") or row.get("Dirección") or False,
             "city": row.get("Ciudad") or False,
             "currency_code": row.get("Moneda") or False,
-            "exchange_rate": row.get("Cotización") or 0.0,
+            # Manual says "Cotización"; the real API uses "Cotizacion" (no accent).
+            "exchange_rate": row.get("Cotizacion") or row.get("Cotización") or 0.0,
             "detail_raw": row.get("Detalle") or False,
             "amount_untaxed": row.get("Importe_Neto") or 0.0,
             "amount_tax": row.get("Importe_IVA") or 0.0,
             "amount_total": row.get("Importe_Total") or 0.0,
-            "due_date_1": row.get("Primer_Vto") or False,
-            # The Phantom manual lists this key as "Segundo_Vtol" (likely a
-            # typo, since its counterpart above is "Primer_Vto"); accept
-            # either spelling until this is confirmed against the real API.
-            "due_date_2": row.get("Segundo_Vto") or row.get("Segundo_Vtol") or False,
-            "associated_receipt_number": row.get("Comp_Asociado") or False,
+            # Phantom uses MySQL's zero-date ("0000-00-00") for an unset
+            # due date; _phantom_clean_date turns that into False.
+            "due_date_1": self._phantom_clean_date(row.get("Primer_Vto")),
+            "due_date_2": self._phantom_clean_date(
+                row.get("Segundo_Vto") or row.get("Segundo_Vtol")
+            ),
+            # Manual calls this "Comp_Asociado"; the real API uses
+            # "Comp_Pago" -- see the field's own help text.
+            "associated_receipt_number": comp_pago,
             "branch_id_phantom": row.get("Suc_ID") or False,
         }
