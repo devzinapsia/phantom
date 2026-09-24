@@ -11,6 +11,7 @@
                 <field name="point_of_sale"/>
                 <field name="comp_number"/>
                 <field name="partner_name"/>
+                <field name="partner_id" optional="hide"/>
                 <field name="amount_total" sum="Total"/>
                 <field name="currency_code"/>
                 <field name="company_id" optional="hide" groups="base.group_multi_company"/>
@@ -28,50 +29,68 @@
         <field name="arch" type="xml">
             <form string="Phantom Invoice" create="0" edit="0">
                 <sheet>
+                    <widget name="web_ribbon" text="Phantom" bg_color="text-bg-info"/>
                     <div class="oe_title">
                         <h1>
-                            <field name="comp_letter"/> <field name="point_of_sale"/>-<field name="comp_number"/>
+                            <field name="display_name" nolabel="1"/>
                         </h1>
                     </div>
                     <group>
-                        <group string="Voucher" name="voucher">
-                            <field name="phantom_idt"/>
-                            <field name="doc_type"/>
-                            <field name="invoice_date"/>
-                            <field name="transaction_date"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="state"/>
-                        </group>
-                        <group string="Customer" name="customer">
+                        <group name="customer">
+                            <field name="partner_id" string="Customer" invisible="not partner_id"
+                                context="{'show_address': 1}" options="{'always_reload': True}"/>
+                            <field name="partner_name" string="Customer" invisible="partner_id"/>
+                            <field name="address" invisible="partner_id"/>
+                            <field name="city" invisible="partner_id"/>
+                            <field name="customer_doc_type" invisible="partner_id"/>
+                            <field name="customer_document" invisible="partner_id"/>
                             <field name="phantom_customer_id"/>
-                            <field name="partner_name"/>
-                            <field name="customer_doc_type"/>
-                            <field name="customer_document"/>
-                            <field name="address"/>
-                            <field name="city"/>
+                        </group>
+                        <group name="voucher">
+                            <field name="invoice_date"/>
+                            <field name="due_date_1" string="Due date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="doc_type"/>
+                            <field name="state"/>
+                            <field name="phantom_idt"/>
+                            <field name="transaction_date"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="Amounts" name="amounts">
-                            <field name="currency_code"/>
-                            <field name="exchange_rate"/>
-                            <field name="amount_untaxed"/>
-                            <field name="amount_tax"/>
-                            <field name="amount_total"/>
-                        </group>
-                        <group string="Due dates and imputation" name="dues">
-                            <field name="due_date_1"/>
-                            <field name="due_date_2"/>
-                            <field name="associated_receipt_number"/>
-                            <field name="branch_id_phantom"/>
-                        </group>
-                    </group>
-                    <group string="Detail" name="detail">
-                        <field name="detail_raw" nolabel="1"/>
-                    </group>
-                    <group string="Error" name="error" invisible="state != 'error'">
-                        <field name="error_message" nolabel="1"/>
-                    </group>
+                    <notebook>
+                        <page string="Invoice Lines" name="lines">
+                            <field name="line_ids" create="0" delete="0" editable="false">
+                                <list>
+                                    <field name="article_code"/>
+                                    <field name="description"/>
+                                    <field name="amount_untaxed" string="Net"/>
+                                    <field name="tax_percent" string="Tax %"/>
+                                    <field name="amount_total" string="Total" sum="Total"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer" colspan="2">
+                                <field name="currency_code"/>
+                                <field name="exchange_rate"/>
+                                <field name="amount_untaxed" string="Subtotal"/>
+                                <field name="amount_tax" string="Tax"/>
+                                <field name="amount_total" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        <page string="Detail" name="detail">
+                            <field name="detail_raw" nolabel="1"/>
+                        </page>
+                        <page string="Other information" name="other">
+                            <group>
+                                <group name="dues">
+                                    <field name="due_date_2"/>
+                                    <field name="associated_receipt_number"/>
+                                    <field name="branch_id_phantom"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Error" name="error" invisible="state != 'error'">
+                            <field name="error_message" nolabel="1"/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -84,6 +103,7 @@
             <search string="Phantom Invoices">
                 <field name="comp_number"/>
                 <field name="partner_name"/>
+                <field name="partner_id"/>
                 <field name="phantom_idt"/>
                 <field name="company_id"/>
                 <filter string="Voucher date" name="invoice_date" date="invoice_date"/>
@@ -94,6 +114,7 @@
                 <!-- Group By -->
                 <group>
                     <filter string="Status" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Customer" name="group_by_partner" context="{'group_by': 'partner_id'}"/>
                     <filter string="Company" name="group_by_company" context="{'group_by': 'company_id'}"/>
                 </group>
             </search>

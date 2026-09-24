@@ -804,6 +804,114 @@ msgid "You are not allowed to trigger a Phantom import."
 msgstr "No tenés permiso para disparar una importación de Phantom."
 
 #. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice_line__article_code
+msgid "Article code"
+msgstr "Código de artículo"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice_line__description
+msgid "Description"
+msgstr "Descripción"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+msgid "Due date"
+msgstr "Fecha de vencimiento"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice_line__invoice_id
+msgid "Invoice"
+msgstr "Factura"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+msgid "Invoice Lines"
+msgstr "Líneas de factura"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__line_ids
+msgid "Lines"
+msgstr "Líneas"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+msgid "Net"
+msgstr "Neto"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice_line__amount_untaxed
+msgid "Net amount"
+msgstr "Importe neto"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+msgid "Other information"
+msgstr "Otra información"
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_phantom_invoice__line_ids
+msgid "Parsed from Phantom's 'Detalle' at import time."
+msgstr "Extraídas del 'Detalle' de Phantom al momento de la importación."
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/models/phantom_invoice.py:0
+msgid "Phantom invoice"
+msgstr "Factura Phantom"
+
+#. module: phantom_connector
+#: model:ir.model,name:phantom_connector.model_phantom_invoice_line
+msgid "Phantom Invoice Line"
+msgstr "Línea de factura de Phantom"
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_phantom_invoice__partner_id
+msgid ""
+"Set by phantom_account_bridge once this invoice is processed into a real "
+"account.move -- empty for a still-pending invoice, since phantom_connector "
+"on its own never creates or links partner records (see "
+"phantom_staging_mixin.py in phantom_account_bridge)."
+msgstr ""
+"Lo completa phantom_account_bridge cuando esta factura se procesa en un "
+"account.move real -- vacío mientras la factura esté pendiente, ya que "
+"phantom_connector por sí solo nunca crea ni vincula registros de partner "
+"(ver phantom_staging_mixin.py en phantom_account_bridge)."
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_phantom_receipt__partner_id
+msgid ""
+"Set by phantom_account_bridge once this receipt is processed into a real "
+"account.payment -- empty for a still-pending receipt, since "
+"phantom_connector on its own never creates or links partner records (see "
+"phantom_staging_mixin.py in phantom_account_bridge)."
+msgstr ""
+"Lo completa phantom_account_bridge cuando este recibo se procesa en un "
+"account.payment real -- vacío mientras el recibo esté pendiente, ya que "
+"phantom_connector por sí solo nunca crea ni vincula registros de partner "
+"(ver phantom_staging_mixin.py en phantom_account_bridge)."
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice_line__sequence
+msgid "Sequence"
+msgstr "Secuencia"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+msgid "Subtotal"
+msgstr "Subtotal"
+
+#. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+msgid "Tax"
+msgstr "Impuesto"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice_line__tax_percent
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+msgid "Tax %"
+msgstr "% de impuesto"
+
+#. module: phantom_connector
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_settings_wizard_form_view
 msgid "http://IPPHANTOM/Includes/CRM/API_CRM.php"
 msgstr "http://IPPHANTOM/Includes/CRM/API_CRM.php"

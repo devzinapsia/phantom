@@ -26,7 +26,10 @@ SAMPLE_INVOICE_ROW = {
     "Ciudad": "CABA",
     "Moneda": "PES",
     "Cotizacion": 1.0,
-    "Detalle": "1, Internet 20MB, 1000.00,21.00,1210.00;",
+    # Real production Detalle values are overwhelmingly multi-item (~99%
+    # of ~8000 real invoices checked), so the sample reflects that instead
+    # of a single-item shape -- confirmed against the live API.
+    "Detalle": "1, Internet 20MB, 1000.00,21.00,1210.00;2,WiFi Router,-100.00,21.00,-121.00;",
     "Importe_Neto": 1000.00,
     "Importe_IVA": 210.00,
     "Importe_Total": 1210.00,
@@ -102,6 +105,19 @@ class TestPhantomImport(TransactionCase):
         self.assertFalse(invoice.due_date_2)
         # Trailing ';' stripped from "Comp_Pago".
         self.assertEqual(invoice.associated_receipt_number, "0001-00000456")
+        # "Detalle" parsed into real line records, in order, negative
+        # amounts (discounts) kept as-is.
+        self.assertEqual(len(invoice.line_ids), 2)
+        first, second = invoice.line_ids
+        self.assertEqual(first.article_code, "1")
+        self.assertEqual(first.description, "Internet 20MB")
+        self.assertEqual(first.amount_untaxed, 1000.00)
+        self.assertEqual(first.tax_percent, 21.00)
+        self.assertEqual(first.amount_total, 1210.00)
+        self.assertEqual(second.article_code, "2")
+        self.assertEqual(second.description, "WiFi Router")
+        self.assertEqual(second.amount_untaxed, -100.00)
+        self.assertEqual(second.amount_total, -121.00)
 
     def test_import_new_receipt_creates_pending(self):
         self._mock_client(receipt_rows=[SAMPLE_RECEIPT_ROW])
@@ -126,6 +142,20 @@ class TestPhantomImport(TransactionCase):
         invoices = self.env["phantom.invoice"].search([("phantom_idt", "=", "1001")])
         self.assertEqual(len(invoices), 1)
         self.assertEqual(invoices.partner_name, "Acme SA Updated")
+        # Lines are replaced on re-import, not accumulated.
+        self.assertEqual(len(invoices.line_ids), 2)
+
+    def test_import_unparseable_detail_creates_fallback_line(self):
+        malformed_row = dict(SAMPLE_INVOICE_ROW, Detalle="not a valid detail string")
+        self._mock_client(invoice_rows=[malformed_row])
+        self.company.action_phantom_import()
+
+        invoice = self.env["phantom.invoice"].search([("phantom_idt", "=", "1001")])
+        self.assertEqual(len(invoice.line_ids), 1)
+        line = invoice.line_ids
+        self.assertEqual(line.description, "not a valid detail string")
+        self.assertEqual(line.amount_untaxed, 1000.00)
+        self.assertEqual(line.amount_total, 1210.00)
 
     def test_reimport_processed_does_not_revert_state(self):
         self._mock_client(invoice_rows=[SAMPLE_INVOICE_ROW])

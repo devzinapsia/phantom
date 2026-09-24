@@ -44,8 +44,14 @@ class PhantomDashboard(models.AbstractModel):
             "currency_id": company.currency_id.id,
             "invoices_this_month_count": invoice_model.search_count(this_month_domain),
             "invoices_this_month_amount": this_month_rows[0][0] if this_month_rows else 0.0,
+            "invoices_this_month_drilldown": self._get_drilldown_action(
+                "phantom.invoice", domain=this_month_domain, name=_("Invoices this month"),
+            ),
             "invoices_last_month_count": invoice_model.search_count(last_month_domain),
             "invoices_last_month_amount": last_month_rows[0][0] if last_month_rows else 0.0,
+            "invoices_last_month_drilldown": self._get_drilldown_action(
+                "phantom.invoice", domain=last_month_domain, name=_("Invoices last month"),
+            ),
             "invoices_pending_count": invoice_model.search_count(pending_invoice_domain),
             "invoices_pending_drilldown": self._get_drilldown_action(
                 "phantom.invoice", domain=pending_invoice_domain, name=_("Pending Invoices"),

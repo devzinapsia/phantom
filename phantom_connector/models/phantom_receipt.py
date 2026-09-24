@@ -43,11 +43,22 @@ class PhantomReceipt(models.Model):
         string="Status", default="pending", required=True, index=True,
     )
     error_message = fields.Text(string="Error message")
+    partner_id = fields.Many2one(
+        "res.partner", string="Customer", readonly=True, copy=False,
+        help="Set by phantom_account_bridge once this receipt is processed "
+        "into a real account.payment -- empty for a still-pending receipt, "
+        "since phantom_connector on its own never creates or links partner "
+        "records (see phantom_staging_mixin.py in phantom_account_bridge).",
+    )
 
     _phantom_idt_company_uniq = models.Constraint(
         "unique(phantom_idt, company_id)",
         "A Phantom receipt with this transaction ID already exists for this company.",
     )
+
+    def _compute_display_name(self):
+        for receipt in self:
+            receipt.display_name = (receipt.comp_number or "").zfill(8)
 
     def _phantom_vals_from_row(self, row):
         # Field names below are confirmed against real API responses, not

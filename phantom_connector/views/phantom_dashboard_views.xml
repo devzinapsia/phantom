@@ -8,7 +8,7 @@
          module's data now, so it is cleaned up as orphaned by Odoo's own
          upgrade mechanism instead of being reused. -->
     <record id="phantom_dashboard_client_action" model="ir.actions.client">
-        <field name="name">Phantom Dashboard</field>
+        <field name="name">Dashboard</field>
         <field name="tag">phantom_connector.dashboard</field>
     </record>
 </odoo>

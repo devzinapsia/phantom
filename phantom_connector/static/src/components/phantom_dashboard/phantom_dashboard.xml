@@ -16,6 +16,7 @@
                             title="labels.invoicesThisMonth"
                             value="state.data.invoices_this_month_count"
                             secondaryValue="formatMonetary(state.data.invoices_this_month_amount)"
+                            onClick="() => this.onDrilldownClick(state.data.invoices_this_month_drilldown)"
                         />
                     </div>
                     <div class="col-12 col-md-3">
@@ -23,6 +24,7 @@
                             title="labels.invoicesLastMonth"
                             value="state.data.invoices_last_month_count"
                             secondaryValue="formatMonetary(state.data.invoices_last_month_amount)"
+                            onClick="() => this.onDrilldownClick(state.data.invoices_last_month_drilldown)"
                         />
                     </div>
                     <div class="col-12 col-md-3">

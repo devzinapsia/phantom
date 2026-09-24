@@ -50,6 +50,8 @@ class TestPhantomDashboard(TransactionCase):
         self.assertEqual(data["receipts_pending_count"], 1)
         self.assertEqual(data["invoices_pending_drilldown"]["res_model"], "phantom.invoice")
         self.assertEqual(data["receipts_pending_drilldown"]["res_model"], "phantom.receipt")
+        self.assertEqual(data["invoices_this_month_drilldown"]["res_model"], "phantom.invoice")
+        self.assertEqual(data["invoices_last_month_drilldown"]["res_model"], "phantom.invoice")
 
     def test_dashboard_last_run_indicators(self):
         now = fields.Datetime.now()
