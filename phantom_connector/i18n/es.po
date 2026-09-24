@@ -306,13 +306,17 @@ msgstr "Acá aparecen las facturas importadas desde Phantom."
 
 #. module: phantom_connector
 #. odoo-javascript
+#. odoo-python
 #: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
+#: code:addons/phantom_connector/models/phantom_dashboard.py:0
 msgid "Invoices last month"
 msgstr "Facturas mes anterior"
 
 #. module: phantom_connector
 #. odoo-javascript
+#. odoo-python
 #: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
+#: code:addons/phantom_connector/models/phantom_dashboard.py:0
 msgid "Invoices this month"
 msgstr "Facturas mes actual"
 
