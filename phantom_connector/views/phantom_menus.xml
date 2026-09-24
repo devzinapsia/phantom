@@ -11,10 +11,6 @@
     <menuitem id="menu_phantom_receipt" name="Receipts"
         parent="menu_phantom_root" action="phantom_receipt_action" sequence="30"/>
 
-    <menuitem id="menu_phantom_import_now" name="Import now"
-        parent="menu_phantom_root" action="phantom_connector.phantom_import_wizard_action"
-        sequence="40" groups="group_phantom_manager"/>
-
     <menuitem id="menu_phantom_settings" name="Configuration"
         parent="menu_phantom_root" action="phantom_connector.phantom_settings_wizard_action"
         sequence="50" groups="group_phantom_manager"/>

@@ -1,2 +1,1 @@
-from . import phantom_import_wizard
 from . import phantom_settings_wizard

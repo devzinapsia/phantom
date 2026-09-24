@@ -1,5 +1,6 @@
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { user } from "@web/core/user";
 import { Layout } from "@web/search/layout";
 import { formatMonetary, formatDateTime } from "@web/views/fields/formatters";
 import { deserializeDateTime } from "@web/core/l10n/dates";
@@ -15,6 +16,7 @@ export class PhantomDashboard extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        this.notification = useService("notification");
         this.labels = {
             invoicesThisMonth: _t("Invoices this month"),
             invoicesLastMonth: _t("Invoices last month"),
@@ -22,9 +24,10 @@ export class PhantomDashboard extends Component {
             pendingReceipts: _t("Pending receipts"),
             lastRead: _t("Last successful Phantom read"),
             lastCreation: _t("Last document creation from Phantom"),
+            importNow: _t("Import now"),
         };
         this.never = _t("Never");
-        this.state = useState({ data: null });
+        this.state = useState({ data: null, importing: false });
 
         onWillStart(async () => {
             await this.fetchData();
@@ -50,6 +53,17 @@ export class PhantomDashboard extends Component {
     async onDrilldownClick(drilldown) {
         if (drilldown) {
             await this.action.doAction(drilldown);
+        }
+    }
+
+    async onImportNowClick() {
+        this.state.importing = true;
+        try {
+            await this.orm.call("res.company", "action_phantom_import", [[user.activeCompany.id]]);
+            this.notification.add(_t("Phantom import finished"), { type: "success" });
+            await this.fetchData();
+        } finally {
+            this.state.importing = false;
         }
     }
 }

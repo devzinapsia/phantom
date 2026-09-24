@@ -22,7 +22,7 @@ class TestPhantomSettingsWizard(TransactionCase):
         self.assertEqual(wizard.phantom_user, "existing_user")
 
     def test_wizard_save_writes_to_company(self):
-        wizard = self.env["phantom.settings.wizard"].create({
+        self.env["phantom.settings.wizard"].create({
             "company_id": self.company.id,
             "phantom_enabled": True,
             "phantom_url": "http://phantom.example/api",
@@ -31,7 +31,6 @@ class TestPhantomSettingsWizard(TransactionCase):
             "phantom_processing_mode": "manual",
             "phantom_sweep_window_days": 5,
         })
-        wizard.action_save()
         self.company.invalidate_recordset()
 
         self.assertTrue(self.company.phantom_enabled)
@@ -39,6 +38,18 @@ class TestPhantomSettingsWizard(TransactionCase):
         self.assertEqual(self.company.phantom_user, "api_user")
         self.assertEqual(self.company.phantom_password, "api_pass")
         self.assertEqual(self.company.phantom_sweep_window_days, 5)
+
+    def test_wizard_write_syncs_to_company(self):
+        wizard = self.env["phantom.settings.wizard"].create({"company_id": self.company.id})
+        wizard.write({"phantom_enabled": True, "phantom_url": "http://phantom.example/api"})
+        self.company.invalidate_recordset()
+
+        self.assertTrue(self.company.phantom_enabled)
+        self.assertEqual(self.company.phantom_url, "http://phantom.example/api")
+
+    def test_wizard_display_name_is_friendly(self):
+        wizard = self.env["phantom.settings.wizard"].create({"company_id": self.company.id})
+        self.assertEqual(wizard.display_name, "Phantom settings")
 
     def test_group_phantom_user_cannot_access_settings_wizard(self):
         user = self.env["res.users"].with_context(no_reset_password=True).create({

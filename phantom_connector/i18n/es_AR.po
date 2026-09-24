@@ -270,21 +270,10 @@ msgid "ID"
 msgstr "ID"
 
 #. module: phantom_connector
-#: model:ir.model,name:phantom_connector.model_phantom_import_wizard
-msgid "Import Now from Phantom"
-msgstr "Importar ahora desde Phantom"
-
-#. module: phantom_connector
-#: model:ir.actions.act_window,name:phantom_connector.phantom_import_wizard_action
-#: model:ir.ui.menu,name:phantom_connector.menu_phantom_import_now
-#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_import_wizard_form_view
+#. odoo-javascript
+#: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
 msgid "Import now"
 msgstr "Importar ahora"
-
-#. module: phantom_connector
-#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_import_wizard_form_view
-msgid "Import now from Phantom"
-msgstr "Importar ahora desde Phantom"
 
 #. module: phantom_connector
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_settings_wizard__phantom_read_hour
@@ -630,6 +619,12 @@ msgid "Phantom returned a non-JSON response from %(url)s."
 msgstr "Phantom devolvió una respuesta que no es JSON desde %(url)s."
 
 #. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/wizards/phantom_settings_wizard.py:0
+msgid "Phantom settings"
+msgstr "Ajustes de Phantom"
+
+#. module: phantom_connector
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__phantom_idt
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__phantom_idt
 msgid "Phantom transaction ID"
@@ -801,6 +796,12 @@ msgstr "Letra del comprobante"
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__comp_number
 msgid "Voucher number"
 msgstr "Número de comprobante"
+
+#. module: phantom_connector
+#. odoo-python
+#: code:addons/phantom_connector/models/res_company.py:0
+msgid "You are not allowed to trigger a Phantom import."
+msgstr "No tenés permiso para disparar una importación de Phantom."
 
 #. module: phantom_connector
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_settings_wizard_form_view

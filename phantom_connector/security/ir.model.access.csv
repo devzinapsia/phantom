@@ -3,5 +3,4 @@ access_phantom_invoice_user,phantom.invoice (user),model_phantom_invoice,group_p
 access_phantom_invoice_manager,phantom.invoice (manager),model_phantom_invoice,group_phantom_manager,1,1,1,1
 access_phantom_receipt_user,phantom.receipt (user),model_phantom_receipt,group_phantom_user,1,0,0,0
 access_phantom_receipt_manager,phantom.receipt (manager),model_phantom_receipt,group_phantom_manager,1,1,1,1
-access_phantom_import_wizard_manager,phantom.import.wizard (manager),model_phantom_import_wizard,group_phantom_manager,1,1,1,1
 access_phantom_settings_wizard_manager,phantom.settings.wizard (manager),model_phantom_settings_wizard,group_phantom_manager,1,1,1,1

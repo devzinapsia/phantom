@@ -5,7 +5,7 @@ import pytz
 
 from odoo import _, fields, models
 from odoo.addons.base.models.res_partner import _tz_get
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 from .phantom_api_client import PhantomAPIClient, PhantomAPIError
 
@@ -82,9 +82,19 @@ class ResCompany(models.Model):
     def action_phantom_import(self):
         """Import pending Phantom invoices/receipts for every company in
         self, right now, regardless of processing mode. Used both by the
-        manual 'Import now' action (interactive, raises on failure) and,
-        per company, by the automatic cron below.
+        manual 'Import now' dashboard button (interactive, raises on
+        failure; available to group_phantom_user and
+        group_phantom_manager alike) and, per company, by the automatic
+        cron below.
+
+        The actual read/write operations run under sudo() (see
+        _phantom_import_one) since group_phantom_user has neither read
+        access to phantom_password nor write access to res.company/
+        phantom.invoice/phantom.receipt -- the explicit group check
+        below is what actually gates who may call this method at all.
         """
+        if not self.env.su and not self.env.user.has_group("phantom_connector.group_phantom_user"):
+            raise AccessError(_("You are not allowed to trigger a Phantom import."))
         for company in self:
             if not company.phantom_enabled:
                 raise UserError(
@@ -97,23 +107,24 @@ class ResCompany(models.Model):
 
     def _phantom_import_one(self):
         self.ensure_one()
-        client = PhantomAPIClient(self.phantom_url, self.phantom_user, self.phantom_password)
+        company = self.sudo()
+        client = PhantomAPIClient(company.phantom_url, company.phantom_user, company.phantom_password)
         client.authenticate()
 
-        today = fields.Date.context_today(self)
-        desde = today - timedelta(days=self.phantom_sweep_window_days)
+        today = fields.Date.context_today(company)
+        desde = today - timedelta(days=company.phantom_sweep_window_days)
 
         invoice_rows = client.query_invoices(
             desde=desde.isoformat(), hasta=today.isoformat(), fecha_filtrar=1
         )
-        self.env["phantom.invoice"]._phantom_upsert(invoice_rows, self)
+        self.env["phantom.invoice"].sudo()._phantom_upsert(invoice_rows, company)
 
         receipt_rows = client.query_receipts(
             desde=desde.isoformat(), hasta=today.isoformat(), fecha_filtrar=1
         )
-        self.env["phantom.receipt"]._phantom_upsert(receipt_rows, self)
+        self.env["phantom.receipt"].sudo()._phantom_upsert(receipt_rows, company)
 
-        self.write({
+        company.write({
             "phantom_last_read_datetime": fields.Datetime.now(),
             "phantom_last_read_date": today,
         })

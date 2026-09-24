@@ -4,13 +4,10 @@
         <field name="name">phantom.settings.wizard.form</field>
         <field name="model">phantom.settings.wizard</field>
         <field name="arch" type="xml">
-            <form string="Phantom Settings">
-                <header>
-                    <button name="action_save" type="object" string="Save" class="btn-primary"/>
-                </header>
+            <form string="Phantom Settings" create="false">
                 <sheet>
+                    <field name="company_id" invisible="1"/>
                     <group>
-                        <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                         <field name="phantom_enabled"/>
                     </group>
                     <group invisible="not phantom_enabled">

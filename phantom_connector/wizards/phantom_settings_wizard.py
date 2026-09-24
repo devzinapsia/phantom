@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.addons.base.models.res_partner import _tz_get
 
 
@@ -11,10 +11,17 @@ class PhantomSettingsWizard(models.TransientModel):
     delegate Phantom configuration without granting general Odoo
     administrator rights.
 
-    Saving writes to res.company via sudo(), scoped to exactly the fields
-    this wizard exposes -- not a blanket write grant on res.company for
-    the group_phantom_manager group, which would be a much bigger access
-    surface than intended.
+    There is no dedicated "Save" button: saving the wizard record through
+    the standard form save control (like any other single-record form)
+    writes straight through to res.company via sudo() in create()/write(),
+    scoped to exactly the fields this wizard exposes -- not a blanket
+    write grant on res.company for the group_phantom_manager group, which
+    would be a much bigger access surface than intended.
+
+    company_id always follows the current active company (env.company),
+    like Odoo's own Settings screen: it is not user-editable here, so
+    switching which company's settings you see means switching the active
+    company first, not picking one on this form.
     """
 
     _name = "phantom.settings.wizard"
@@ -35,11 +42,6 @@ class PhantomSettingsWizard(models.TransientModel):
     phantom_read_hour = fields.Float(string="Import time")
     phantom_sweep_window_days = fields.Integer(string="Sweep window (days)")
 
-    @api.onchange("company_id")
-    def _onchange_company_id(self):
-        if self.company_id:
-            self.update(self._values_from_company(self.company_id))
-
     @api.model
     def default_get(self, fields_list):
         vals = super().default_get(fields_list)
@@ -49,6 +51,10 @@ class PhantomSettingsWizard(models.TransientModel):
         )
         vals.update(self._values_from_company(company))
         return vals
+
+    def _compute_display_name(self):
+        for wizard in self:
+            wizard.display_name = _("Phantom settings")
 
     def _values_from_company(self, company):
         return {
@@ -75,13 +81,17 @@ class PhantomSettingsWizard(models.TransientModel):
             "phantom_sweep_window_days": self.phantom_sweep_window_days,
         }
 
-    def action_save(self):
-        """Not opened as a dialog (see the action's target="current"), so
-        there is no modal to close -- return to the dashboard instead,
-        like a regular "Save" on any other full-page form.
-        """
-        self.ensure_one()
-        self.company_id.sudo().write(self._phantom_settings_vals())
-        return self.env["ir.actions.actions"]._for_xml_id(
-            "phantom_connector.phantom_dashboard_client_action"
-        )
+    def _phantom_sync_to_company(self):
+        for wizard in self:
+            wizard.company_id.sudo().write(wizard._phantom_settings_vals())
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        wizards = super().create(vals_list)
+        wizards._phantom_sync_to_company()
+        return wizards
+
+    def write(self, vals):
+        res = super().write(vals)
+        self._phantom_sync_to_company()
+        return res

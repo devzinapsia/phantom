@@ -1,6 +1,8 @@
 from datetime import date, datetime
 from unittest.mock import patch
 
+from odoo import Command
+from odoo.exceptions import AccessError
 from odoo.tests.common import TransactionCase
 
 # Field names and shapes below are confirmed against real API responses,
@@ -166,3 +168,32 @@ class TestPhantomImport(TransactionCase):
         ) as mock_import:
             self.env["res.company"]._cron_phantom_import()
             mock_import.assert_called_once()
+
+    def test_group_phantom_user_can_trigger_import(self):
+        """group_phantom_user has neither read access to phantom_password
+        nor write access to res.company/phantom.invoice/phantom.receipt,
+        but can still trigger a manual import -- the underlying
+        read/write operations run under sudo() (see
+        ResCompany._phantom_import_one), gated by an explicit group
+        check in action_phantom_import() rather than by direct ACLs.
+        """
+        user = self.env["res.users"].with_context(no_reset_password=True).create({
+            "name": "Phantom User",
+            "login": "phantom_user_import_test",
+            "email": "phantom_user_import_test@example.com",
+            "group_ids": [Command.link(self.env.ref("phantom_connector.group_phantom_user").id)],
+        })
+        self._mock_client(invoice_rows=[SAMPLE_INVOICE_ROW])
+        self.company.with_user(user).action_phantom_import()
+
+        invoice = self.env["phantom.invoice"].search([("phantom_idt", "=", "1001")])
+        self.assertEqual(len(invoice), 1)
+
+    def test_user_without_phantom_group_cannot_trigger_import(self):
+        user = self.env["res.users"].with_context(no_reset_password=True).create({
+            "name": "No Phantom Access",
+            "login": "no_phantom_access_test",
+            "email": "no_phantom_access_test@example.com",
+        })
+        with self.assertRaises(AccessError):
+            self.company.with_user(user).action_phantom_import()

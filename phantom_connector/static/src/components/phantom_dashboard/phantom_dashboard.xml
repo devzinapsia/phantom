@@ -3,6 +3,11 @@
 
     <t t-name="phantom_connector.PhantomDashboard">
         <Layout display="display">
+            <t t-set-slot="layout-buttons">
+                <button type="button" class="btn btn-primary" t-on-click="onImportNowClick" t-att-disabled="state.importing">
+                    <t t-esc="labels.importNow"/>
+                </button>
+            </t>
             <div class="o_phantom_dashboard p-3">
 
                 <div class="row g-3 mb-4">
