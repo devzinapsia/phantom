@@ -3,7 +3,7 @@ import logging
 import pytz
 
 from odoo import _, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -50,8 +50,19 @@ class ResCompany(models.Model):
     def action_phantom_create(self):
         """Create real invoices/receipts for every pending Phantom record
         of every company in self, right now, regardless of processing
-        mode.
+        mode. Used both by the manual 'Process now' dashboard button
+        (interactive, raises on failure; available to group_phantom_user
+        and group_phantom_manager alike, same as action_phantom_import in
+        phantom_connector) and, per company, by the automatic cron below.
+
+        The actual document creation runs under sudo() (see
+        _phantom_create_one), since group_phantom_user has neither create
+        access on account.move/account.payment/res.partner nor write
+        access to res.company -- the explicit group check below is what
+        actually gates who may call this method at all.
         """
+        if not self.env.su and not self.env.user.has_group("phantom_connector.group_phantom_user"):
+            raise AccessError(_("You are not allowed to trigger Phantom document creation."))
         for company in self:
             if not company.phantom_enabled:
                 raise UserError(
@@ -61,15 +72,16 @@ class ResCompany(models.Model):
 
     def _phantom_create_one(self):
         self.ensure_one()
-        invoice_model = self.env["phantom.invoice"]
-        receipt_model = self.env["phantom.receipt"]
+        company = self.sudo()
+        invoice_model = self.env["phantom.invoice"].sudo()
+        receipt_model = self.env["phantom.receipt"].sudo()
 
         pending_invoices = invoice_model.search([
             ("company_id", "=", self.id), ("state", "=", "pending"),
         ])
         for invoice in pending_invoices:
             try:
-                invoice._phantom_create_document(self)
+                invoice._phantom_create_document(company)
             except Exception as exc:
                 _logger.exception(
                     "Failed to create an account.move from phantom.invoice %s", invoice.id
@@ -81,7 +93,7 @@ class ResCompany(models.Model):
         ])
         for receipt in pending_receipts:
             try:
-                receipt._phantom_create_document(self)
+                receipt._phantom_create_document(company)
             except Exception as exc:
                 _logger.exception(
                     "Failed to create an account.payment from phantom.receipt %s", receipt.id
@@ -96,15 +108,15 @@ class ResCompany(models.Model):
         ])
         for invoice in retry_invoices:
             try:
-                invoice._phantom_try_reconcile(self)
+                invoice._phantom_try_reconcile(company)
             except Exception:
                 _logger.exception(
                     "Failed to retry reconciliation for phantom.invoice %s", invoice.id
                 )
 
-        self.write({
+        company.write({
             "phantom_last_creation_date": fields.Datetime.now(),
-            "phantom_last_creation_run_date": fields.Date.context_today(self),
+            "phantom_last_creation_run_date": fields.Date.context_today(company),
         })
 
     def _cron_phantom_create(self):

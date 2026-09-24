@@ -285,3 +285,21 @@ msgstr "Cliente de Phantom desconocido"
 #: code:addons/phantom_account_bridge/models/phantom_invoice.py:0
 msgid "Unknown Phantom document type '%(doc_type)s'."
 msgstr "Tipo de comprobante de Phantom desconocido '%(doc_type)s'."
+
+#. module: phantom_account_bridge
+#. odoo-javascript
+#: code:addons/phantom_account_bridge/static/src/components/phantom_dashboard/phantom_dashboard_patch.js:0
+msgid "Process now"
+msgstr "Procesar ahora"
+
+#. module: phantom_account_bridge
+#. odoo-javascript
+#: code:addons/phantom_account_bridge/static/src/components/phantom_dashboard/phantom_dashboard_patch.js:0
+msgid "Phantom document creation finished"
+msgstr "Creación de comprobantes de Phantom finalizada"
+
+#. module: phantom_account_bridge
+#. odoo-python
+#: code:addons/phantom_account_bridge/models/res_company.py:0
+msgid "You are not allowed to trigger Phantom document creation."
+msgstr "No tenés permiso para disparar la creación de comprobantes de Phantom."

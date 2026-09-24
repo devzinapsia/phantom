@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-inherit="phantom_connector.PhantomDashboard" t-inherit-mode="extension">
+        <xpath expr="//button[@t-on-click='onImportNowClick']" position="after">
+            <button type="button" class="btn btn-secondary" t-on-click="onProcessNowClick" t-att-disabled="state.processing">
+                <t t-esc="labels.processNow"/>
+            </button>
+        </xpath>
+    </t>
+
+</templates>

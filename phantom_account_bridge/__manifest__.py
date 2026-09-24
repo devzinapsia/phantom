@@ -1,6 +1,6 @@
 {
     "name": "Phantom Account Bridge",
-    "version": "19.0.1.1.0",
+    "version": "19.0.1.1.1",
     "summary": "Create real invoices, receipts and reconciliations from Phantom staging data",
     "author": "Zinapsia",
     "website": "https://www.zinapsia.com",
@@ -15,6 +15,11 @@
         "views/account_move_views.xml",
         "views/account_payment_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "phantom_account_bridge/static/src/**/*",
+        ],
+    },
     "installable": True,
     "application": False,
     "auto_install": True,

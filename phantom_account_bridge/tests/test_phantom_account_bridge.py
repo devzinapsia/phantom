@@ -3,6 +3,7 @@ from datetime import date
 
 from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.exceptions import AccessError
 
 SAMPLE_INVOICE_ROW = {
     "Tipo": "Factura",
@@ -298,3 +299,34 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
 
         move_action = staging.account_move_id.action_view_phantom_invoice()
         self.assertEqual(move_action["res_id"], staging.id)
+
+    def test_group_phantom_user_can_trigger_create(self):
+        """group_phantom_user has none of the real accounting/partner
+        create rights _phantom_create_one actually needs, but can still
+        trigger it via action_phantom_create() -- gated by an explicit
+        group check rather than by direct ACLs, same pattern as
+        action_phantom_import in phantom_connector.
+        """
+        staging = self._create_invoice_staging(IDT="I15", Nro_Comp="00000137")
+        user = self.env["res.users"].with_context(no_reset_password=True).create({
+            "name": "Phantom User",
+            "login": "phantom_user_create_test",
+            "email": "phantom_user_create_test@example.com",
+            "company_ids": [Command.link(self.company.id)],
+            "company_id": self.company.id,
+            "group_ids": [Command.link(self.env.ref("phantom_connector.group_phantom_user").id)],
+        })
+        self.company.with_user(user).action_phantom_create()
+        staging.invalidate_recordset()
+
+        self.assertEqual(staging.state, "processed")
+        self.assertTrue(staging.account_move_id)
+
+    def test_user_without_phantom_group_cannot_trigger_create(self):
+        user = self.env["res.users"].with_context(no_reset_password=True).create({
+            "name": "No Phantom Access",
+            "login": "no_phantom_access_create_test",
+            "email": "no_phantom_access_create_test@example.com",
+        })
+        with self.assertRaises(AccessError):
+            self.company.with_user(user).action_phantom_create()
