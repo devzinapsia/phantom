@@ -125,6 +125,62 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
         self.assertEqual(move.classification_id, self.classification)
         self.assertAlmostEqual(move.amount_untaxed, 1000.00)
         self.assertAlmostEqual(move.amount_tax, 210.00)
+        # Letter "A" -> CUIT + Responsable Inscripto.
+        self.assertEqual(
+            move.partner_id.l10n_latam_identification_type_id, self.env.ref("l10n_ar.it_cuit")
+        )
+        self.assertEqual(
+            move.partner_id.l10n_ar_afip_responsibility_type_id, self.env.ref("l10n_ar.res_IVARI")
+        )
+        self.assertEqual(move.partner_id.state_id, self.env.ref("base.state_ar_b"))
+        self.assertEqual(move.partner_id.country_id, self.env.ref("base.ar"))
+        self.assertIn("555", move.partner_id.comment or "")
+
+    def test_letter_b_sets_consumidor_final_and_dni(self):
+        staging = self._create_invoice_staging(
+            IDT="I9", Nro_Comp="00000131", Tipo_Comp="B", Doc_Tipo="96", Documento="12345678",
+        )
+        self.company._phantom_create_one()
+        staging.invalidate_recordset()
+
+        partner = staging.account_move_id.partner_id
+        self.assertEqual(partner.l10n_latam_identification_type_id, self.env.ref("l10n_ar.it_dni"))
+        self.assertEqual(partner.l10n_ar_afip_responsibility_type_id, self.env.ref("l10n_ar.res_CF"))
+        self.assertEqual(partner.vat, "12345678")
+
+    def test_customer_matched_by_phantom_id_in_notes(self):
+        staging1 = self._create_invoice_staging(IDT="I10", Nro_Comp="00000132")
+        self.company._phantom_create_one()
+        staging1.invalidate_recordset()
+        partner = staging1.account_move_id.partner_id
+
+        # Same Phantom customer (IDA "555", unchanged), but a different
+        # document this time -- must still match the existing partner via
+        # the Phantom ID note, not create a duplicate.
+        staging2 = self._create_invoice_staging(
+            IDT="I11", Nro_Comp="00000133", Documento="99999999999",
+        )
+        self.company._phantom_create_one()
+        staging2.invalidate_recordset()
+
+        self.assertEqual(staging2.account_move_id.partner_id, partner)
+
+    def test_customer_matched_by_name_fallback(self):
+        staging1 = self._create_invoice_staging(IDT="I12", Nro_Comp="00000134")
+        self.company._phantom_create_one()
+        staging1.invalidate_recordset()
+        partner = staging1.account_move_id.partner_id
+
+        # Different Phantom customer ID and document, but the same name
+        # ("Acme SA", unchanged) -- must still match by name as a last
+        # resort.
+        staging2 = self._create_invoice_staging(
+            IDT="I13", Nro_Comp="00000135", IDA="999", Documento="11111111111",
+        )
+        self.company._phantom_create_one()
+        staging2.invalidate_recordset()
+
+        self.assertEqual(staging2.account_move_id.partner_id, partner)
 
     def test_new_customer_created_and_reused_without_overwrite(self):
         staging1 = self._create_invoice_staging(IDT="I2", Nro_Comp="00000124")

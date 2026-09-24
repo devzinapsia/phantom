@@ -205,6 +205,12 @@ msgstr "Mixin de upsert de staging de Phantom"
 
 #. module: phantom_account_bridge
 #. odoo-python
+#: code:addons/phantom_account_bridge/models/phantom_staging_mixin.py:0
+msgid "Phantom customer ID: %(phantom_customer_id)s"
+msgstr "ID de cliente Phantom: %(phantom_customer_id)s"
+
+#. module: phantom_account_bridge
+#. odoo-python
 #: code:addons/phantom_account_bridge/models/res_company.py:0
 msgid "Phantom document creation failed for %(company)s"
 msgstr "Falló la creación de comprobantes de Phantom para %(company)s"
