@@ -14,6 +14,7 @@
                 <field name="partner_id" optional="hide"/>
                 <field name="amount_total" sum="Total"/>
                 <field name="currency_code"/>
+                <field name="cae" optional="hide"/>
                 <field name="company_id" optional="hide" groups="base.group_multi_company"/>
                 <field name="transaction_date" optional="hide"/>
                 <field name="phantom_idt" optional="hide"/>
@@ -84,6 +85,10 @@
                                     <field name="due_date_2"/>
                                     <field name="associated_receipt_number"/>
                                     <field name="branch_id_phantom"/>
+                                </group>
+                                <group name="afip" string="AFIP">
+                                    <field name="cae"/>
+                                    <field name="cae_due_date"/>
                                 </group>
                             </group>
                         </page>

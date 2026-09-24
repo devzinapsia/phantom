@@ -1,12 +1,12 @@
 {
     "name": "Phantom Account Bridge",
-    "version": "19.0.1.0.3",
+    "version": "19.0.1.1.0",
     "summary": "Create real invoices, receipts and reconciliations from Phantom staging data",
     "author": "Zinapsia",
     "website": "https://www.zinapsia.com",
     "license": "AGPL-3",
     "category": "Accounting/Accounting",
-    "depends": ["phantom_connector", "account", "account_move_classification", "l10n_ar"],
+    "depends": ["phantom_connector", "account", "account_move_classification", "l10n_ar", "l10n_ar_edi"],
     "data": [
         "data/ir_cron_data.xml",
         "wizards/views/phantom_settings_wizard_views.xml",

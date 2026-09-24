@@ -916,6 +916,36 @@ msgid "Tax %"
 msgstr "% de impuesto"
 
 #. module: phantom_connector
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+msgid "AFIP"
+msgstr "AFIP"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__cae
+#: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_invoice_form_view
+msgid "CAE"
+msgstr "CAE"
+
+#. module: phantom_connector
+#: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__cae_due_date
+msgid "CAE due date"
+msgstr "Vencimiento del CAE"
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_phantom_invoice__cae
+msgid ""
+"AFIP electronic authorization code ('CAE'), as already issued to Phantom "
+"by AFIP -- Odoo never requests it, only records it."
+msgstr ""
+"Código de autorización electrónico ('CAE') de AFIP, ya emitido a Phantom "
+"por AFIP -- Odoo nunca lo solicita, solo lo registra."
+
+#. module: phantom_connector
+#: model:ir.model.fields,help:phantom_connector.field_phantom_invoice__cae_due_date
+msgid "Phantom 'CAE_Vto'."
+msgstr "'CAE_Vto' de Phantom."
+
+#. module: phantom_connector
 #: model_terms:ir.ui.view,arch_db:phantom_connector.phantom_settings_wizard_form_view
 msgid "http://IPPHANTOM/Includes/CRM/API_CRM.php"
 msgstr "http://IPPHANTOM/Includes/CRM/API_CRM.php"

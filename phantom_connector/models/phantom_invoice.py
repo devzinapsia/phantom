@@ -47,6 +47,12 @@ class PhantomInvoice(models.Model):
     amount_total = fields.Float(string="Total amount")
     due_date_1 = fields.Date(string="First due date")
     due_date_2 = fields.Date(string="Second due date")
+    cae = fields.Char(
+        string="CAE",
+        help="AFIP electronic authorization code ('CAE'), as already issued "
+        "to Phantom by AFIP -- Odoo never requests it, only records it.",
+    )
+    cae_due_date = fields.Date(string="CAE due date", help="Phantom 'CAE_Vto'.")
     associated_receipt_number = fields.Char(
         string="Associated receipt number",
         help="Phantom 'Comp_Pago' (the generic manual calls this field "
@@ -189,6 +195,8 @@ class PhantomInvoice(models.Model):
             "due_date_2": self._phantom_clean_date(
                 row.get("Segundo_Vto") or row.get("Segundo_Vtol")
             ),
+            "cae": row.get("CAE") or False,
+            "cae_due_date": self._phantom_clean_date(row.get("CAE_Vto")),
             # Manual calls this "Comp_Asociado"; the real API uses
             # "Comp_Pago" -- see the field's own help text.
             "associated_receipt_number": comp_pago,

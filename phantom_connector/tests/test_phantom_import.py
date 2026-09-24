@@ -37,6 +37,8 @@ SAMPLE_INVOICE_ROW = {
     "Segundo_Vto": "0000-00-00",
     "Comp_Pago": "0001-00000456;",
     "Suc_ID": "0",
+    "CAE": "86349888860306",
+    "CAE_Vto": "2026-09-11",
 }
 
 SAMPLE_RECEIPT_ROW = {
@@ -105,6 +107,8 @@ class TestPhantomImport(TransactionCase):
         self.assertFalse(invoice.due_date_2)
         # Trailing ';' stripped from "Comp_Pago".
         self.assertEqual(invoice.associated_receipt_number, "0001-00000456")
+        self.assertEqual(invoice.cae, "86349888860306")
+        self.assertEqual(invoice.cae_due_date, date(2026, 9, 11))
         # "Detalle" parsed into real line records, in order, negative
         # amounts (discounts) kept as-is.
         self.assertEqual(len(invoice.line_ids), 2)

@@ -49,6 +49,7 @@ class PhantomInvoice(models.Model):
             "invoice_date": self.invoice_date,
             "classification_id": company.phantom_classification_id.id,
             "invoice_line_ids": self._phantom_invoice_line_vals(company),
+            **self._phantom_cae_vals(),
         })
         move.action_post()
         self.write({"account_move_id": move.id, "partner_id": partner.id, "state": "processed"})
@@ -77,6 +78,23 @@ class PhantomInvoice(models.Model):
                 )
             )
         return move_type, document_type
+
+    def _phantom_cae_vals(self):
+        """account.move vals recording the CAE Phantom already obtained from
+        AFIP -- Odoo never requests one itself here, only records it, same
+        pattern already used by l10n_ar_import_bill's manual AFIP import
+        wizard and l10n_ar_wsmtxca_ws (both confirmed in grupolara's actual
+        installed ingadhoc modules, not guessed): l10n_ar_afip_auth_code,
+        l10n_ar_afip_auth_code_due, l10n_ar_afip_auth_mode="CAE".
+        """
+        self.ensure_one()
+        if not self.cae:
+            return {}
+        return {
+            "l10n_ar_afip_auth_code": self.cae,
+            "l10n_ar_afip_auth_code_due": self.cae_due_date,
+            "l10n_ar_afip_auth_mode": "CAE",
+        }
 
     def _phantom_invoice_line_vals(self, company):
         """Build account.move.line vals from this invoice's own line_ids,

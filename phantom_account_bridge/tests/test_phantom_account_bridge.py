@@ -1,4 +1,5 @@
 import time
+from datetime import date
 
 from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
@@ -26,6 +27,8 @@ SAMPLE_INVOICE_ROW = {
     "Segundo_Vto": "2026-09-30",
     "Comp_Asociado": "",
     "Suc_ID": "0",
+    "CAE": "86349888860306",
+    "CAE_Vto": "2026-09-11",
 }
 
 SAMPLE_RECEIPT_ROW = {
@@ -135,6 +138,10 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
         self.assertEqual(move.partner_id.state_id, self.env.ref("base.state_ar_b"))
         self.assertEqual(move.partner_id.country_id, self.env.ref("base.ar"))
         self.assertIn("555", move.partner_id.comment or "")
+        # CAE, already obtained by Phantom from AFIP, recorded as-is.
+        self.assertEqual(move.l10n_ar_afip_auth_code, "86349888860306")
+        self.assertEqual(move.l10n_ar_afip_auth_code_due, date(2026, 9, 11))
+        self.assertEqual(move.l10n_ar_afip_auth_mode, "CAE")
 
     def test_letter_b_sets_consumidor_final_and_dni(self):
         staging = self._create_invoice_staging(
@@ -147,6 +154,17 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
         self.assertEqual(partner.l10n_latam_identification_type_id, self.env.ref("l10n_ar.it_dni"))
         self.assertEqual(partner.l10n_ar_afip_responsibility_type_id, self.env.ref("l10n_ar.res_CF"))
         self.assertEqual(partner.vat, "12345678")
+
+    def test_missing_cae_leaves_afip_fields_empty(self):
+        staging = self._create_invoice_staging(
+            IDT="I14", Nro_Comp="00000136", CAE="", CAE_Vto="",
+        )
+        self.company._phantom_create_one()
+        staging.invalidate_recordset()
+
+        move = staging.account_move_id
+        self.assertFalse(move.l10n_ar_afip_auth_code)
+        self.assertFalse(move.l10n_ar_afip_auth_mode)
 
     def test_customer_matched_by_phantom_id_in_notes(self):
         staging1 = self._create_invoice_staging(IDT="I10", Nro_Comp="00000132")
