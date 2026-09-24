@@ -32,5 +32,5 @@ class PhantomReceipt(models.Model):
             "memo": self.reference or self.comp_number,
         })
         payment.action_post()
-        self.write({"account_payment_id": payment.id, "state": "processed"})
+        self.write({"account_payment_id": payment.id, "partner_id": partner.id, "state": "processed"})
         return payment

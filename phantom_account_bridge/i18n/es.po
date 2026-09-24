@@ -216,12 +216,6 @@ msgid "Phantom integration is not enabled for %(company)s."
 msgstr "La integración con Phantom no está habilitada para %(company)s."
 
 #. module: phantom_account_bridge
-#. odoo-python
-#: code:addons/phantom_account_bridge/models/phantom_invoice.py:0
-msgid "Phantom invoice"
-msgstr "Factura Phantom"
-
-#. module: phantom_account_bridge
 #: model:ir.actions.server,name:phantom_account_bridge.ir_cron_phantom_create_ir_actions_server
 msgid "Phantom: automatic document creation"
 msgstr "Phantom: creación automática de comprobantes"

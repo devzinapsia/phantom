@@ -51,7 +51,7 @@ class PhantomInvoice(models.Model):
             "invoice_line_ids": self._phantom_invoice_line_vals(company),
         })
         move.action_post()
-        self.write({"account_move_id": move.id, "state": "processed"})
+        self.write({"account_move_id": move.id, "partner_id": partner.id, "state": "processed"})
         self._phantom_try_reconcile(company)
         return move
 
@@ -79,6 +79,12 @@ class PhantomInvoice(models.Model):
         return move_type, document_type
 
     def _phantom_invoice_line_vals(self, company):
+        """Build account.move.line vals from this invoice's own line_ids,
+        already parsed from Phantom's 'Detalle' at import time by
+        phantom_connector (see phantom.invoice._phantom_parse_detail_lines)
+        -- not re-parsed here, so there is a single source of truth for
+        the parsing logic.
+        """
         self.ensure_one()
         analytic_distribution = (
             {str(company.phantom_analytic_account_id.id): 100.0}
@@ -87,45 +93,16 @@ class PhantomInvoice(models.Model):
         return [
             Command.create({
                 "product_id": company.phantom_default_product_id.id,
-                "name": description,
+                "name": line.description or line.article_code,
                 "quantity": 1,
-                "price_unit": net_amount,
-                "tax_ids": [Command.set(self._phantom_get_sale_tax(company, tax_percent).ids)],
+                "price_unit": line.amount_untaxed,
+                "tax_ids": [
+                    Command.set(self._phantom_get_sale_tax(company, line.tax_percent).ids)
+                ],
                 "analytic_distribution": analytic_distribution,
             })
-            for description, net_amount, tax_percent in self._phantom_parse_detail()
+            for line in self.line_ids
         ]
-
-    def _phantom_parse_detail(self):
-        """Parse Phantom's 'Detalle': 'ID_ART, DESCRIPTION, NET, %TAX, TOTAL;'
-        repeated per item, separated by ';'. Returns a list of
-        (description, net_amount, tax_percent) tuples, one per item. Falls
-        back to a single line using the staging record's own totals if the
-        text can't be parsed into any usable item (e.g. unexpected format).
-        """
-        self.ensure_one()
-        items = []
-        for chunk in (self.detail_raw or "").split(";"):
-            chunk = chunk.strip()
-            if not chunk:
-                continue
-            parts = [part.strip() for part in chunk.split(",")]
-            if len(parts) < 5:
-                continue
-            art_id, description, net, tax_pct, _total = parts[:5]
-            try:
-                net_amount = float(net)
-                tax_percent = float(tax_pct)
-            except ValueError:
-                continue
-            items.append((description or art_id, net_amount, tax_percent))
-        if not items:
-            fallback_description = self.detail_raw or self.comp_number or _("Phantom invoice")
-            fallback_tax_percent = (
-                round(self.amount_tax / self.amount_untaxed * 100, 2) if self.amount_untaxed else 0.0
-            )
-            items.append((fallback_description, self.amount_untaxed, fallback_tax_percent))
-        return items
 
     def _phantom_get_sale_tax(self, company, tax_percent):
         self.ensure_one()
