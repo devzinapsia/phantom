@@ -123,3 +123,19 @@ class PhantomStagingMixin(models.AbstractModel):
             "country_id": self.env.ref("base.ar").id,
             "comment": note or False,
         })
+
+    def _phantom_creation_chatter_message(self, trigger):
+        """Body posted (via message_post, not message_notify -- this is a
+        permanent chatter log entry on the document itself, not a
+        transient notification) on the account.move/account.payment that
+        this record's own _phantom_create_document just created, so
+        anyone opening it in Odoo can see at a glance it came from the
+        Phantom integration and whether this particular run was the
+        automatic cron or a manual 'Process now'.
+        """
+        self.ensure_one()
+        return (
+            _("Created by the Phantom integration (automatic process).")
+            if trigger == "automatic"
+            else _("Created by the Phantom integration (manual process).")
+        )

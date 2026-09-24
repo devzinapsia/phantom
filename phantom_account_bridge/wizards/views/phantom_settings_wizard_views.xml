@@ -15,6 +15,9 @@
                     <field name="phantom_create_hour" widget="float_time"
                         invisible="phantom_processing_mode != 'automatic'"/>
                 </group>
+                <group string="Notifications" name="notifications">
+                    <field name="phantom_notify_user_ids" widget="many2many_tags"/>
+                </group>
             </xpath>
         </field>
     </record>

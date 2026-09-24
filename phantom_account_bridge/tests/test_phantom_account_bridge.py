@@ -1,5 +1,6 @@
 import time
 from datetime import date
+from unittest.mock import patch
 
 from odoo import Command
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
@@ -114,6 +115,14 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
         row.setdefault("IDT", row["Nro_Comp"])
         self.env["phantom.receipt"]._phantom_upsert([row], self.company)
         return self.env["phantom.receipt"].search([("phantom_idt", "=", row["IDT"])])
+
+    def _mock_message_notify(self):
+        # patch.object on the *runtime* class (type(self.env["mail.thread"])),
+        # not a static "odoo.addons.mail.models.mail_thread.MailThread"
+        # import path -- Odoo composes a fresh class per model at registry
+        # build time, so patching the raw imported class silently misses
+        # the one actually used by self.env["mail.thread"].
+        return patch.object(type(self.env["mail.thread"]), "message_notify")
 
     def test_invoice_creates_account_move(self):
         staging = self._create_invoice_staging(IDT="I1", Nro_Comp="00000123")
@@ -353,3 +362,103 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
             staging.invalidate_recordset()
         self.assertTrue(all(s.state == "processed" for s in stagings))
         self.assertTrue(self.company.phantom_last_creation_date)
+
+    def test_invoice_sets_afip_service_period(self):
+        """Service period (first/last day of the invoice's own month) is
+        set before create(), avoiding ARCA's "Debe completar el período
+        correspondiente a la facturación de servicios" error -- l10n_ar's
+        own auto-fill for this (account.move._set_afip_service_dates())
+        only runs after action_post()'s own super() call, too late to
+        avoid a validation that happens earlier in the MRO.
+        """
+        staging = self._create_invoice_staging(IDT="I18", Nro_Comp="00000140")
+        self.company._phantom_create_one()
+        staging.invalidate_recordset()
+
+        move = staging.account_move_id
+        self.assertEqual(move.l10n_ar_afip_service_start, date(2026, 9, 1))
+        self.assertEqual(move.l10n_ar_afip_service_end, date(2026, 9, 30))
+
+    def test_error_record_is_retried_on_next_run(self):
+        bad = self._create_invoice_staging(IDT="I17", Nro_Comp="00000139", Tipo="Unknown")
+        self.company._phantom_create_one()
+        bad.invalidate_recordset()
+        self.assertEqual(bad.state, "error")
+
+        # Simulate the underlying issue being fixed (e.g. a bad Tipo, or --
+        # what actually happened in production -- a missing AFIP service
+        # period, now handled automatically).
+        bad.doc_type = "Factura"
+        self.company._phantom_create_one()
+        bad.invalidate_recordset()
+
+        self.assertEqual(bad.state, "processed")
+        self.assertTrue(bad.account_move_id)
+
+    def test_notification_summary_sent_on_success(self):
+        responsible = self.env["res.users"].with_context(no_reset_password=True).create({
+            "name": "Phantom Responsible",
+            "login": "phantom_responsible_test",
+            "email": "phantom_responsible_test@example.com",
+        })
+        self.company.sudo().phantom_notify_user_ids = [Command.link(responsible.id)]
+        self._create_invoice_staging(IDT="I19", Nro_Comp="00000141")
+
+        with self._mock_message_notify() as mock_notify:
+            self.company._phantom_create_one()
+
+        mock_notify.assert_called_once()
+        kwargs = mock_notify.call_args.kwargs
+        self.assertIn(responsible.partner_id.id, kwargs["partner_ids"])
+        self.assertIn("successfully", kwargs["subject"])
+        self.assertIn("Invoices processed: 1", kwargs["body"])
+
+    def test_notification_summary_reports_errors(self):
+        responsible = self.env["res.users"].with_context(no_reset_password=True).create({
+            "name": "Phantom Responsible 2",
+            "login": "phantom_responsible_test_2",
+            "email": "phantom_responsible_test_2@example.com",
+        })
+        self.company.sudo().phantom_notify_user_ids = [Command.link(responsible.id)]
+        self._create_invoice_staging(IDT="I21", Nro_Comp="00000143", Tipo="Unknown")
+
+        with self._mock_message_notify() as mock_notify:
+            self.company._phantom_create_one()
+
+        mock_notify.assert_called_once()
+        kwargs = mock_notify.call_args.kwargs
+        self.assertIn("errors", kwargs["subject"])
+        self.assertIn("errors: 1", kwargs["body"])
+
+    def test_no_notification_without_responsible_users(self):
+        self._create_invoice_staging(IDT="I20", Nro_Comp="00000142")
+        with self._mock_message_notify() as mock_notify:
+            self.company._phantom_create_one()
+        mock_notify.assert_not_called()
+
+    def test_invoice_and_receipt_log_creation_trigger_on_chatter(self):
+        """Every account.move/account.payment created by Phantom gets a
+        chatter note saying so, and whether this run was the automatic
+        cron or a manual 'Process now' -- so anyone opening the document
+        directly in Odoo (not the Phantom dashboard) can still see where
+        it came from.
+        """
+        invoice_staging = self._create_invoice_staging(IDT="I22", Nro_Comp="00000144")
+        receipt_staging = self._create_receipt_staging(IDT="I22", Nro_Comp="REC-0144")
+        self.company._phantom_create_one(trigger="automatic")
+        invoice_staging.invalidate_recordset()
+        receipt_staging.invalidate_recordset()
+
+        move_messages = invoice_staging.account_move_id.message_ids.mapped("body")
+        self.assertTrue(any("automatic process" in body for body in move_messages))
+
+        payment_messages = receipt_staging.account_payment_id.message_ids.mapped("body")
+        self.assertTrue(any("automatic process" in body for body in payment_messages))
+
+    def test_invoice_logs_manual_trigger_on_chatter(self):
+        staging = self._create_invoice_staging(IDT="I23", Nro_Comp="00000145")
+        self.company._phantom_create_one(trigger="manual")
+        staging.invalidate_recordset()
+
+        move_messages = staging.account_move_id.message_ids.mapped("body")
+        self.assertTrue(any("manual process" in body for body in move_messages))

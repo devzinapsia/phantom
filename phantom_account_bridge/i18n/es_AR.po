@@ -282,6 +282,18 @@ msgstr "Cliente de Phantom desconocido"
 
 #. module: phantom_account_bridge
 #. odoo-python
+#: code:addons/phantom_account_bridge/models/phantom_staging_mixin.py:0
+msgid "Created by the Phantom integration (automatic process)."
+msgstr "Creado por la integración de Phantom (proceso automático)."
+
+#. module: phantom_account_bridge
+#. odoo-python
+#: code:addons/phantom_account_bridge/models/phantom_staging_mixin.py:0
+msgid "Created by the Phantom integration (manual process)."
+msgstr "Creado por la integración de Phantom (proceso manual)."
+
+#. module: phantom_account_bridge
+#. odoo-python
 #: code:addons/phantom_account_bridge/models/phantom_invoice.py:0
 msgid "Unknown Phantom document type '%(doc_type)s'."
 msgstr "Tipo de comprobante de Phantom desconocido '%(doc_type)s'."
@@ -303,3 +315,63 @@ msgstr "Creación de comprobantes de Phantom finalizada"
 #: code:addons/phantom_account_bridge/models/res_company.py:0
 msgid "You are not allowed to trigger Phantom document creation."
 msgstr "No tenés permiso para disparar la creación de comprobantes de Phantom."
+
+#. module: phantom_account_bridge
+#: model:ir.model.fields,field_description:phantom_account_bridge.field_phantom_settings_wizard__phantom_notify_user_ids
+#: model:ir.model.fields,field_description:phantom_account_bridge.field_res_company__phantom_notify_user_ids
+msgid "Responsible users"
+msgstr "Responsables"
+
+#. module: phantom_account_bridge
+#: model:ir.model.fields,help:phantom_account_bridge.field_res_company__phantom_notify_user_ids
+msgid ""
+"Notified by email every time Phantom document creation finishes (manual "
+"'Process now' or the automatic cron) with at least one record processed -- "
+"whether it succeeded, how many invoices/receipts were created, and how "
+"many need review. Empty means no notification is sent."
+msgstr ""
+"Reciben un correo cada vez que termina la creación de comprobantes de "
+"Phantom (\"Procesar ahora\" manual o el cron automático) con al menos un "
+"registro procesado -- si salió bien, cuántas facturas/recibos se crearon, "
+"y cuántos hay que revisar. Vacío significa que no se envía notificación."
+
+#. module: phantom_account_bridge
+#: model_terms:ir.ui.view,arch_db:phantom_account_bridge.phantom_settings_wizard_form_view
+msgid "Notifications"
+msgstr "Notificaciones"
+
+#. module: phantom_account_bridge
+#. odoo-python
+#: code:addons/phantom_account_bridge/models/res_company.py:0
+msgid "Phantom processing finished with errors for %(company)s"
+msgstr "El procesamiento de Phantom terminó con errores para %(company)s"
+
+#. module: phantom_account_bridge
+#. odoo-python
+#: code:addons/phantom_account_bridge/models/res_company.py:0
+msgid "Phantom processing finished successfully for %(company)s"
+msgstr "El procesamiento de Phantom terminó correctamente para %(company)s"
+
+#. module: phantom_account_bridge
+#. odoo-python
+#: code:addons/phantom_account_bridge/models/res_company.py:0
+msgid ""
+"Invoices processed: %(invoices_processed)s (errors: %(invoices_error)s)<br/>"
+"Receipts processed: %(receipts_processed)s (errors: %(receipts_error)s)<br/>"
+"%(review_note)s"
+msgstr ""
+"Facturas procesadas: %(invoices_processed)s (errores: %(invoices_error)s)<br/>"
+"Recibos procesados: %(receipts_processed)s (errores: %(receipts_error)s)<br/>"
+"%(review_note)s"
+
+#. module: phantom_account_bridge
+#. odoo-python
+#: code:addons/phantom_account_bridge/models/res_company.py:0
+msgid "Some records need review -- check the 'Error' filter on Phantom Invoices/Receipts."
+msgstr "Hay registros para revisar -- fijate en el filtro 'Error' de Facturas/Recibos de Phantom."
+
+#. module: phantom_account_bridge
+#. odoo-python
+#: code:addons/phantom_account_bridge/models/res_company.py:0
+msgid "No errors."
+msgstr "Sin errores."

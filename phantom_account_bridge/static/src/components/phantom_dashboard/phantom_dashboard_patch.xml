@@ -9,7 +9,7 @@
         </xpath>
         <xpath expr="//div[hasclass('o_phantom_dashboard')]/div[hasclass('row')][1]" position="before">
             <div t-if="state.progress" class="progress mb-3" style="height: 20px;">
-                <div class="progress-bar" role="progressbar"
+                <div class="progress-bar text-white" role="progressbar"
                     t-attf-style="width: {{state.progress.percent}}%"
                     t-esc="state.progress.done + ' / ' + state.progress.total"/>
             </div>

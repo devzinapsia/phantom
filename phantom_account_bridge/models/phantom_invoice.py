@@ -1,3 +1,5 @@
+from dateutil.relativedelta import relativedelta
+
 from odoo import Command, _, fields, models
 from odoo.exceptions import UserError
 
@@ -35,7 +37,7 @@ class PhantomInvoice(models.Model):
             "res_id": self.account_move_id.id,
         }
 
-    def _phantom_create_document(self, company):
+    def _phantom_create_document(self, company, trigger):
         self.ensure_one()
         partner = self._phantom_get_or_create_partner(company)
         move_type, document_type = self._phantom_get_move_type_and_document()
@@ -50,8 +52,10 @@ class PhantomInvoice(models.Model):
             "classification_id": company.phantom_classification_id.id,
             "invoice_line_ids": self._phantom_invoice_line_vals(company),
             **self._phantom_cae_vals(),
+            **self._phantom_afip_service_period_vals(),
         })
         move.action_post()
+        move.message_post(body=self._phantom_creation_chatter_message(trigger))
         self.write({"account_move_id": move.id, "partner_id": partner.id, "state": "processed"})
         self._phantom_try_reconcile(company)
         return move
@@ -78,6 +82,28 @@ class PhantomInvoice(models.Model):
                 )
             )
         return move_type, document_type
+
+    def _phantom_afip_service_period_vals(self):
+        """account.move vals for the AFIP 'service period' (l10n_ar_afip_
+        service_start/end) -- required by ARCA whenever the invoice's
+        concept is services or mixed (l10n_ar_afip_concept in ('2', '3',
+        '4'), e.g. Phantom's own internet/service invoices always are).
+
+        Community l10n_ar already auto-fills these with the exact same
+        first/last-day-of-invoice-month math in
+        account.move._set_afip_service_dates() -- but only *after*
+        action_post()'s own super() call, which is too late: whatever
+        validation raises "Debe completar el período..." runs before that
+        point in the MRO. Setting them here, before create(), avoids the
+        error instead of racing it.
+        """
+        self.ensure_one()
+        return {
+            "l10n_ar_afip_service_start": self.invoice_date + relativedelta(day=1),
+            "l10n_ar_afip_service_end": (
+                self.invoice_date + relativedelta(day=1, days=-1, months=1)
+            ),
+        }
 
     def _phantom_cae_vals(self):
         """account.move vals recording the CAE Phantom already obtained from

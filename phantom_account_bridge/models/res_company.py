@@ -7,6 +7,13 @@ from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
+# Every creation run retries "error" records alongside "pending" ones, not
+# just "pending" -- a record stuck in "error" (e.g. a fixable config issue,
+# like a missing AFIP service period) should get another shot on the very
+# next run instead of staying stuck forever until someone finds and
+# manually resets it.
+_RETRYABLE_STATES = ("pending", "error")
+
 
 class ResCompany(models.Model):
     _inherit = "res.company"
@@ -46,14 +53,25 @@ class ResCompany(models.Model):
         "company. Used only to avoid running twice on the same local day; "
         "manual creation runs do not change it.",
     )
+    phantom_notify_user_ids = fields.Many2many(
+        "res.users", string="Responsible users",
+        help="Notified by email every time Phantom document creation "
+        "finishes (manual 'Process now' or the automatic cron) with at "
+        "least one record processed -- whether it succeeded, how many "
+        "invoices/receipts were created, and how many need review. Empty "
+        "means no notification is sent.",
+    )
 
-    def action_phantom_create(self):
+    def action_phantom_create(self, trigger="manual"):
         """Create real invoices/receipts for every pending Phantom record
         of every company in self, right now, regardless of processing
-        mode. Used both by the manual 'Process now' dashboard button
-        (interactive, raises on failure; available to group_phantom_user
-        and group_phantom_manager alike, same as action_phantom_import in
-        phantom_connector) and, per company, by the automatic cron below.
+        mode. Available to group_phantom_user and group_phantom_manager
+        alike, same as action_phantom_import in phantom_connector; called,
+        per company, by the automatic cron below (trigger="automatic")
+        and directly by tests/callers simulating a manual all-at-once
+        trigger (trigger="manual", the default) -- the interactive 'Process
+        now' dashboard button itself drives action_phantom_create_batch
+        instead, for the progress bar.
 
         The actual document creation runs under sudo() (see
         _phantom_create_one), since group_phantom_user has neither create
@@ -68,27 +86,46 @@ class ResCompany(models.Model):
                 raise UserError(
                     _("Phantom integration is not enabled for %(company)s.", company=company.name)
                 )
-            company._phantom_create_one()
+            company._phantom_create_one(trigger)
 
-    def _phantom_process_invoices(self, invoices):
+    def _phantom_process_invoices(self, invoices, trigger):
+        """Returns (succeeded, failed) counts -- counted directly off the
+        recordset that was actually attempted, not re-derived later by
+        guessing at a time window: a write_date-vs-timestamp comparison is
+        unreliable within a single transaction (Postgres's own now() can
+        stay frozen at transaction start rather than advancing in real
+        time), so it must not be relied on for this. trigger ("manual" or
+        "automatic") is passed straight through to
+        phantom.invoice._phantom_create_document, which logs it on the
+        created account.move's chatter.
+        """
+        succeeded = failed = 0
         for invoice in invoices:
             try:
-                invoice._phantom_create_document(self)
+                invoice._phantom_create_document(self, trigger)
+                succeeded += 1
             except Exception as exc:
                 _logger.exception(
                     "Failed to create an account.move from phantom.invoice %s", invoice.id
                 )
                 invoice.write({"state": "error", "error_message": str(exc)})
+                failed += 1
+        return succeeded, failed
 
-    def _phantom_process_receipts(self, receipts):
+    def _phantom_process_receipts(self, receipts, trigger):
+        """See _phantom_process_invoices's docstring."""
+        succeeded = failed = 0
         for receipt in receipts:
             try:
-                receipt._phantom_create_document(self)
+                receipt._phantom_create_document(self, trigger)
+                succeeded += 1
             except Exception as exc:
                 _logger.exception(
                     "Failed to create an account.payment from phantom.receipt %s", receipt.id
                 )
                 receipt.write({"state": "error", "error_message": str(exc)})
+                failed += 1
+        return succeeded, failed
 
     def _phantom_retry_reconciliation(self):
         """Retry reconciliation for invoices whose associated receipt
@@ -107,30 +144,51 @@ class ResCompany(models.Model):
                     "Failed to retry reconciliation for phantom.invoice %s", invoice.id
                 )
 
-    def _phantom_create_one(self):
+    def _phantom_create_one(self, trigger="manual"):
         self.ensure_one()
         company = self.sudo()
         invoice_model = self.env["phantom.invoice"].sudo()
         receipt_model = self.env["phantom.receipt"].sudo()
 
-        company._phantom_process_invoices(invoice_model.search([
-            ("company_id", "=", self.id), ("state", "=", "pending"),
-        ]))
-        company._phantom_process_receipts(receipt_model.search([
-            ("company_id", "=", self.id), ("state", "=", "pending"),
-        ]))
+        invoices_processed, invoices_error = company._phantom_process_invoices(invoice_model.search([
+            ("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES),
+        ]), trigger)
+        receipts_processed, receipts_error = company._phantom_process_receipts(receipt_model.search([
+            ("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES),
+        ]), trigger)
         company._phantom_retry_reconciliation()
         company.write({
             "phantom_last_creation_date": fields.Datetime.now(),
             "phantom_last_creation_run_date": fields.Date.context_today(company),
         })
+        company._phantom_notify_creation_summary(
+            invoices_processed, invoices_error, receipts_processed, receipts_error
+        )
 
-    def action_phantom_create_batch(self, batch_size=50):
-        """Process up to batch_size pending Phantom records for this
-        company and return progress info -- one bounded chunk of work per
-        call, meant to be looped by the client while it renders a progress
-        bar (same pattern as Odoo's own base_import: the client drives the
-        loop and tracks progress itself, not a background/cron job).
+    def action_phantom_create_batch(
+        self, batch_size=50,
+        invoices_processed=0, invoices_error=0, receipts_processed=0, receipts_error=0,
+    ):
+        """Process up to batch_size pending *and* error-state Phantom
+        records for this company (see _RETRYABLE_STATES) and return
+        progress info -- one bounded chunk of work per call, meant to be
+        looped by the client while it renders a progress bar (same
+        pattern as Odoo's own base_import: the client drives the loop and
+        tracks progress itself, not a background/cron job).
+
+        The four *_processed/*_error kwargs are the running totals from
+        every call so far in this run, passed back in by the caller on
+        every call after the first (using this method's own returned
+        values) -- accumulated this way, not via a "since when" timestamp
+        comparison against write_date, which is unreliable within a
+        transaction (see _phantom_process_invoices's docstring). Used
+        for the completion-summary notification
+        (_phantom_notify_creation_summary) once the whole run is done.
+
+        Always driven by the interactive 'Process now' button, so every
+        document created through here is logged on its own chatter as a
+        manual-trigger creation (see
+        phantom.staging.mixin._phantom_creation_chatter_message).
 
         Same access rules as action_phantom_create() (explicit group
         check, sudo'd document creation) -- see its docstring.
@@ -147,22 +205,30 @@ class ResCompany(models.Model):
         invoice_model = self.env["phantom.invoice"].sudo()
         receipt_model = self.env["phantom.receipt"].sudo()
 
-        pending_invoices = invoice_model.search([
-            ("company_id", "=", self.id), ("state", "=", "pending"),
+        retryable_invoices = invoice_model.search([
+            ("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES),
         ], limit=batch_size)
-        company._phantom_process_invoices(pending_invoices)
+        batch_invoices_processed, batch_invoices_error = company._phantom_process_invoices(
+            retryable_invoices, "manual"
+        )
+        invoices_processed += batch_invoices_processed
+        invoices_error += batch_invoices_error
 
-        remaining_slots = batch_size - len(pending_invoices)
-        pending_receipts = receipt_model.browse()
+        remaining_slots = batch_size - len(retryable_invoices)
+        retryable_receipts = receipt_model.browse()
         if remaining_slots > 0:
-            pending_receipts = receipt_model.search([
-                ("company_id", "=", self.id), ("state", "=", "pending"),
+            retryable_receipts = receipt_model.search([
+                ("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES),
             ], limit=remaining_slots)
-            company._phantom_process_receipts(pending_receipts)
+            batch_receipts_processed, batch_receipts_error = company._phantom_process_receipts(
+                retryable_receipts, "manual"
+            )
+            receipts_processed += batch_receipts_processed
+            receipts_error += batch_receipts_error
 
         remaining = (
-            invoice_model.search_count([("company_id", "=", self.id), ("state", "=", "pending")])
-            + receipt_model.search_count([("company_id", "=", self.id), ("state", "=", "pending")])
+            invoice_model.search_count([("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES)])
+            + receipt_model.search_count([("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES)])
         )
         done = not remaining
         if done:
@@ -171,10 +237,17 @@ class ResCompany(models.Model):
                 "phantom_last_creation_date": fields.Datetime.now(),
                 "phantom_last_creation_run_date": fields.Date.context_today(company),
             })
+            company._phantom_notify_creation_summary(
+                invoices_processed, invoices_error, receipts_processed, receipts_error
+            )
         return {
-            "processed": len(pending_invoices) + len(pending_receipts),
+            "processed": len(retryable_invoices) + len(retryable_receipts),
             "remaining": remaining,
             "done": done,
+            "invoices_processed": invoices_processed,
+            "invoices_error": invoices_error,
+            "receipts_processed": receipts_processed,
+            "receipts_error": receipts_error,
         }
 
     def _cron_phantom_create(self):
@@ -193,7 +266,7 @@ class ResCompany(models.Model):
             try:
                 if not company._phantom_due_for_automatic_creation():
                     continue
-                company.action_phantom_create()
+                company.action_phantom_create(trigger="automatic")
             except Exception as exc:
                 _logger.exception(
                     "Phantom automatic document creation failed for company %s",
@@ -213,6 +286,57 @@ class ResCompany(models.Model):
         configured_minutes = round(self.phantom_create_hour * 60)
         now_minutes = now_local.hour * 60 + now_local.minute
         return now_minutes >= configured_minutes
+
+    def _phantom_notify_creation_summary(
+        self, invoices_processed, invoices_error, receipts_processed, receipts_error,
+    ):
+        """Email phantom_notify_user_ids a summary of everything processed
+        in this run (both success and error counts, counted directly off
+        the recordsets actually attempted -- see
+        _phantom_process_invoices's docstring for why not a timestamp
+        comparison), once a creation run (manual 'Process now' or the
+        automatic cron) finishes -- not just on a hard failure, unlike
+        _phantom_notify_creation_failure below, which is for the whole
+        run raising before it could even finish. Silently does nothing if
+        no one is configured to be notified, or if nothing was actually
+        processed this run (avoids a "nothing happened" email every time
+        the cron finds no pending records).
+        """
+        self.ensure_one()
+        recipients = self.phantom_notify_user_ids.partner_id
+        if not recipients:
+            return
+        if not (invoices_processed or invoices_error or receipts_processed or receipts_error):
+            return
+
+        has_errors = bool(invoices_error or receipts_error)
+        subject = (
+            _("Phantom processing finished with errors for %(company)s", company=self.name)
+            if has_errors else
+            _("Phantom processing finished successfully for %(company)s", company=self.name)
+        )
+        body = _(
+            "Invoices processed: %(invoices_processed)s (errors: %(invoices_error)s)<br/>"
+            "Receipts processed: %(receipts_processed)s (errors: %(receipts_error)s)<br/>"
+            "%(review_note)s",
+            invoices_processed=invoices_processed,
+            invoices_error=invoices_error,
+            receipts_processed=receipts_processed,
+            receipts_error=receipts_error,
+            review_note=(
+                _(
+                    "Some records need review -- check the 'Error' filter on "
+                    "Phantom Invoices/Receipts."
+                )
+                if has_errors else _("No errors.")
+            ),
+        )
+        self.env["mail.thread"].message_notify(
+            partner_ids=recipients.ids,
+            subject=subject,
+            body=body,
+            email_add_signature=False,
+        )
 
     def _phantom_notify_creation_failure(self, exc):
         self.ensure_one()

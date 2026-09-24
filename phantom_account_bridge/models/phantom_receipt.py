@@ -17,7 +17,7 @@ class PhantomReceipt(models.Model):
             "res_id": self.account_payment_id.id,
         }
 
-    def _phantom_create_document(self, company):
+    def _phantom_create_document(self, company, trigger):
         self.ensure_one()
         partner = self._phantom_get_or_create_partner(company)
 
@@ -32,5 +32,6 @@ class PhantomReceipt(models.Model):
             "memo": self.reference or self.comp_number,
         })
         payment.action_post()
+        payment.message_post(body=self._phantom_creation_chatter_message(trigger))
         self.write({"account_payment_id": payment.id, "partner_id": partner.id, "state": "processed"})
         return payment
