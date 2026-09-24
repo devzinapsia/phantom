@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_phantom_root" name="Phantom" sequence="90" groups="group_phantom_user"/>
+    <menuitem id="menu_phantom_root" name="Phantom" sequence="90" groups="group_phantom_user"
+        web_icon="phantom_connector,static/description/icon.png"/>
 
     <menuitem id="menu_phantom_dashboard" name="Dashboard"
         parent="menu_phantom_root" action="phantom_dashboard_client_action" sequence="10"/>
