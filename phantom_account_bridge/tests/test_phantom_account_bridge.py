@@ -361,6 +361,40 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
         for staging in stagings:
             staging.invalidate_recordset()
         self.assertTrue(all(s.state == "processed" for s in stagings))
+
+    def test_batch_create_skips_permanently_broken_record_instead_of_looping(self):
+        """A record that fails again on retry stays in "error" -- still
+        "retryable" per _RETRYABLE_STATES -- so without an id cursor the
+        next batch call (same state-only search) would just re-select the
+        same permanently-broken record forever, making zero progress
+        (this is exactly what happened in production: "Process now" hung
+        for minutes with the progress bar stuck at 0/0). The id cursor
+        (last_invoice_id/last_receipt_id, threaded the same way as the
+        *_processed/*_error counts) guarantees every record is attempted
+        at most once per run, so the loop always terminates in a bounded
+        number of calls regardless of how many records never succeed.
+        """
+        broken = self._create_invoice_staging(IDT="I200", Nro_Comp="00000200", Tipo="Unknown")
+        good = self._create_invoice_staging(IDT="I201", Nro_Comp="00000201")
+
+        result = self.company.action_phantom_create_batch(batch_size=1)
+        self.assertEqual(result["processed"], 1)
+        self.assertFalse(result["done"])
+        broken.invalidate_recordset()
+        self.assertEqual(broken.state, "error")
+
+        # Without threading last_invoice_id back in, this second call would
+        # re-select the same still-"error" broken record and make no
+        # progress -- confirms the cursor, not luck, is what advances past it.
+        result = self.company.action_phantom_create_batch(
+            batch_size=1, last_invoice_id=result["last_invoice_id"],
+        )
+        self.assertEqual(result["processed"], 1)
+        self.assertTrue(result["done"])
+        good.invalidate_recordset()
+        broken.invalidate_recordset()
+        self.assertEqual(good.state, "processed")
+        self.assertEqual(broken.state, "error")
         self.assertTrue(self.company.phantom_last_creation_date)
 
     def test_invoice_sets_afip_service_period(self):

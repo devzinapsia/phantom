@@ -38,6 +38,14 @@ patch(PhantomDashboard.prototype, {
             let invoicesError = 0;
             let receiptsProcessed = 0;
             let receiptsError = 0;
+            // Id cursor, also threaded back into every call: an "error"
+            // record stays retryable even after failing again, so without
+            // this the server would keep re-selecting the same
+            // permanently-broken records at the head of the id order every
+            // single call, looping forever with zero progress. See
+            // action_phantom_create_batch's docstring.
+            let lastInvoiceId = 0;
+            let lastReceiptId = 0;
             while (!done) {
                 const result = await this.orm.call(
                     "res.company",
@@ -49,12 +57,16 @@ patch(PhantomDashboard.prototype, {
                         invoices_error: invoicesError,
                         receipts_processed: receiptsProcessed,
                         receipts_error: receiptsError,
+                        last_invoice_id: lastInvoiceId,
+                        last_receipt_id: lastReceiptId,
                     }
                 );
                 invoicesProcessed = result.invoices_processed;
                 invoicesError = result.invoices_error;
                 receiptsProcessed = result.receipts_processed;
                 receiptsError = result.receipts_error;
+                lastInvoiceId = result.last_invoice_id;
+                lastReceiptId = result.last_receipt_id;
                 this.state.progress.done += result.processed;
                 if (total === null) {
                     total = this.state.progress.done + result.remaining;

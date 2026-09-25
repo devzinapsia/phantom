@@ -169,6 +169,7 @@ msgid "Customer name"
 msgstr "Nombre del cliente"
 
 #. module: phantom_connector
+#: model:ir.actions.client,name:phantom_connector.phantom_dashboard_client_action
 #: model:ir.ui.menu,name:phantom_connector.menu_phantom_dashboard
 msgid "Dashboard"
 msgstr "Tablero"

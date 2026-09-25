@@ -168,6 +168,7 @@ class ResCompany(models.Model):
     def action_phantom_create_batch(
         self, batch_size=50,
         invoices_processed=0, invoices_error=0, receipts_processed=0, receipts_error=0,
+        last_invoice_id=0, last_receipt_id=0,
     ):
         """Process up to batch_size pending *and* error-state Phantom
         records for this company (see _RETRYABLE_STATES) and return
@@ -184,6 +185,18 @@ class ResCompany(models.Model):
         transaction (see _phantom_process_invoices's docstring). Used
         for the completion-summary notification
         (_phantom_notify_creation_summary) once the whole run is done.
+
+        last_invoice_id/last_receipt_id are an id cursor, also threaded
+        back in by the caller the same way: since error records stay
+        retryable even after failing again, selecting "the next batch_size
+        retryable records" by state alone would keep re-selecting the same
+        permanently-broken records at the head of the id order forever,
+        looping infinitely with zero progress. Restricting each call to
+        id > cursor guarantees every record is attempted at most once per
+        run (a fresh cursor each time the button is pressed, or each cron
+        run) and that the loop always terminates, whether or not every
+        record actually succeeds -- a record still in "error" after this
+        sweep gets picked up again on the *next* run, not this one.
 
         Always driven by the interactive 'Process now' button, so every
         document created through here is logged on its own chatter as a
@@ -207,28 +220,40 @@ class ResCompany(models.Model):
 
         retryable_invoices = invoice_model.search([
             ("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES),
-        ], limit=batch_size)
+            ("id", ">", last_invoice_id),
+        ], limit=batch_size, order="id")
         batch_invoices_processed, batch_invoices_error = company._phantom_process_invoices(
             retryable_invoices, "manual"
         )
         invoices_processed += batch_invoices_processed
         invoices_error += batch_invoices_error
+        if retryable_invoices:
+            last_invoice_id = max(retryable_invoices.ids)
 
         remaining_slots = batch_size - len(retryable_invoices)
         retryable_receipts = receipt_model.browse()
         if remaining_slots > 0:
             retryable_receipts = receipt_model.search([
                 ("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES),
-            ], limit=remaining_slots)
+                ("id", ">", last_receipt_id),
+            ], limit=remaining_slots, order="id")
             batch_receipts_processed, batch_receipts_error = company._phantom_process_receipts(
                 retryable_receipts, "manual"
             )
             receipts_processed += batch_receipts_processed
             receipts_error += batch_receipts_error
+            if retryable_receipts:
+                last_receipt_id = max(retryable_receipts.ids)
 
         remaining = (
-            invoice_model.search_count([("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES)])
-            + receipt_model.search_count([("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES)])
+            invoice_model.search_count([
+                ("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES),
+                ("id", ">", last_invoice_id),
+            ])
+            + receipt_model.search_count([
+                ("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES),
+                ("id", ">", last_receipt_id),
+            ])
         )
         done = not remaining
         if done:
@@ -248,6 +273,8 @@ class ResCompany(models.Model):
             "invoices_error": invoices_error,
             "receipts_processed": receipts_processed,
             "receipts_error": receipts_error,
+            "last_invoice_id": last_invoice_id,
+            "last_receipt_id": last_receipt_id,
         }
 
     def _cron_phantom_create(self):
