@@ -29,6 +29,25 @@
                     </div>
                     <div class="col-12 col-md-3">
                         <DashboardsKpiCard
+                            title="labels.receiptsThisMonth"
+                            value="state.data.receipts_this_month_count"
+                            secondaryValue="formatMonetary(state.data.receipts_this_month_amount)"
+                            onClick="() => this.onDrilldownClick(state.data.receipts_this_month_drilldown)"
+                        />
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <DashboardsKpiCard
+                            title="labels.receiptsLastMonth"
+                            value="state.data.receipts_last_month_count"
+                            secondaryValue="formatMonetary(state.data.receipts_last_month_amount)"
+                            onClick="() => this.onDrilldownClick(state.data.receipts_last_month_drilldown)"
+                        />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-3">
+                        <DashboardsKpiCard
                             title="labels.pendingInvoices"
                             value="state.data.invoices_pending_count"
                             onClick="() => this.onDrilldownClick(state.data.invoices_pending_drilldown)"
@@ -41,16 +60,30 @@
                             onClick="() => this.onDrilldownClick(state.data.receipts_pending_drilldown)"
                         />
                     </div>
+                    <div class="col-12 col-md-3">
+                        <DashboardsKpiCard
+                            title="labels.errorInvoices"
+                            value="state.data.invoices_error_count"
+                            onClick="() => this.onDrilldownClick(state.data.invoices_error_drilldown)"
+                        />
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <DashboardsKpiCard
+                            title="labels.errorReceipts"
+                            value="state.data.receipts_error_count"
+                            onClick="() => this.onDrilldownClick(state.data.receipts_error_drilldown)"
+                        />
+                    </div>
                 </div>
 
                 <div class="row g-3 mb-4">
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-3">
                         <DashboardsKpiCard
                             title="labels.lastRead"
                             value="formatDateTime(state.data.last_read_datetime)"
                         />
                     </div>
-                    <div class="col-12 col-md-4">
+                    <div class="col-12 col-md-3">
                         <DashboardsKpiCard
                             title="labels.lastCreation"
                             value="formatDateTime(state.data.last_creation_datetime)"

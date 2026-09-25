@@ -20,8 +20,12 @@ export class PhantomDashboard extends Component {
         this.labels = {
             invoicesThisMonth: _t("Invoices this month"),
             invoicesLastMonth: _t("Invoices last month"),
+            receiptsThisMonth: _t("Receipts this month"),
+            receiptsLastMonth: _t("Receipts last month"),
             pendingInvoices: _t("Pending invoices"),
             pendingReceipts: _t("Pending receipts"),
+            errorInvoices: _t("Invoices with errors"),
+            errorReceipts: _t("Receipts with errors"),
             lastRead: _t("Last successful Phantom read"),
             lastCreation: _t("Last document creation from Phantom"),
             importNow: _t("Import now"),

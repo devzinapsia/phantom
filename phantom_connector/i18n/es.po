@@ -322,6 +322,14 @@ msgid "Invoices this month"
 msgstr "Facturas mes actual"
 
 #. module: phantom_connector
+#. odoo-javascript
+#. odoo-python
+#: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
+#: code:addons/phantom_connector/models/phantom_dashboard.py:0
+msgid "Invoices with errors"
+msgstr "Facturas con errores"
+
+#. module: phantom_connector
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_import_wizard__write_uid
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_invoice__write_uid
 #: model:ir.model.fields,field_description:phantom_connector.field_phantom_receipt__write_uid
@@ -664,6 +672,30 @@ msgstr "Modo de procesamiento"
 #: model:ir.ui.menu,name:phantom_connector.menu_phantom_receipt
 msgid "Receipts"
 msgstr "Recibos"
+
+#. module: phantom_connector
+#. odoo-javascript
+#. odoo-python
+#: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
+#: code:addons/phantom_connector/models/phantom_dashboard.py:0
+msgid "Receipts this month"
+msgstr "Recibos mes actual"
+
+#. module: phantom_connector
+#. odoo-javascript
+#. odoo-python
+#: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
+#: code:addons/phantom_connector/models/phantom_dashboard.py:0
+msgid "Receipts last month"
+msgstr "Recibos mes anterior"
+
+#. module: phantom_connector
+#. odoo-javascript
+#. odoo-python
+#: code:addons/phantom_connector/static/src/components/phantom_dashboard/phantom_dashboard.js:0
+#: code:addons/phantom_connector/models/phantom_dashboard.py:0
+msgid "Receipts with errors"
+msgstr "Recibos con errores"
 
 #. module: phantom_connector
 #: model_terms:ir.actions.act_window,help:phantom_connector.phantom_receipt_action
