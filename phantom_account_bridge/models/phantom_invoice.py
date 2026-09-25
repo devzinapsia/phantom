@@ -149,13 +149,17 @@ class PhantomInvoice(models.Model):
         ]
 
     def _phantom_get_sale_tax(self, company, tax_percent):
+        """Falls back to 21% (Argentina's standard IVA rate, always
+        configured) when tax_percent itself has no matching account.tax --
+        e.g. Phantom occasionally reports a malformed rate like -2.0% for
+        what should be a normal line. Unconditional fallback, not just for
+        negative/clearly-invalid percentages, confirmed with the user
+        2026-09-25. Only raises if even the 21% fallback doesn't exist.
+        """
         self.ensure_one()
-        tax = self.env["account.tax"].search([
-            ("company_id", "=", company.id),
-            ("type_tax_use", "=", "sale"),
-            ("amount_type", "=", "percent"),
-            ("amount", "=", tax_percent),
-        ], limit=1)
+        tax = self._phantom_search_sale_tax(company, tax_percent)
+        if not tax and tax_percent != 21.0:
+            tax = self._phantom_search_sale_tax(company, 21.0)
         if not tax:
             raise UserError(
                 _(
@@ -165,6 +169,15 @@ class PhantomInvoice(models.Model):
                 )
             )
         return tax
+
+    def _phantom_search_sale_tax(self, company, tax_percent):
+        self.ensure_one()
+        return self.env["account.tax"].search([
+            ("company_id", "=", company.id),
+            ("type_tax_use", "=", "sale"),
+            ("amount_type", "=", "percent"),
+            ("amount", "=", tax_percent),
+        ], limit=1)
 
     def _phantom_try_reconcile(self, company):
         """Reconcile this invoice against its associated receipt's payment,

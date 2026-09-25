@@ -9,8 +9,14 @@
         </xpath>
         <xpath expr="//div[hasclass('o_phantom_dashboard')]/div[hasclass('row')][1]" position="before">
             <div t-if="state.progress" class="progress mb-3" style="height: 20px;">
-                <div class="progress-bar text-white" role="progressbar"
-                    t-attf-style="width: {{state.progress.percent}}%"
+                <!-- Odoo 19's dark theme sets .progress-bar's own color
+                     with !important (confirmed live: an inline color
+                     without !important is silently overridden, and the
+                     "text-white" utility class never wins either since it
+                     has the same specificity and loses on source order).
+                     Only an inline !important beats it. -->
+                <div class="progress-bar" role="progressbar"
+                    t-attf-style="width: {{state.progress.percent}}%; color: #fff !important;"
                     t-esc="state.progress.done + ' / ' + state.progress.total"/>
             </div>
         </xpath>

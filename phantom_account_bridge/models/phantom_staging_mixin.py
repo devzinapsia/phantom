@@ -1,3 +1,7 @@
+import re
+
+from stdnum.ar import cuit as ar_cuit, dni as ar_dni
+
 from odoo import _, models
 from odoo.exceptions import UserError
 
@@ -21,6 +25,14 @@ _LETTER_RESPONSIBILITY_TYPE_XMLID = {
     "A": "l10n_ar.res_IVARI",
     "B": "l10n_ar.res_CF",
 }
+
+# CUIT and CUIL are numerically identical (stdnum.ar.cuit validates both --
+# same 11-digit length, same prefix table, same check-digit algorithm; only
+# the prefix's real-world meaning differs). AFIP convention: prefixes 20/23/
+# 24/27 are issued to individuals (CUIL), 30/33/34/50/51/55 to companies/
+# international entities (CUIT). Used only to *label* an already-valid
+# 11-digit number correctly, confirmed with the user 2026-09-25.
+_CUIL_PREFIXES = {"20", "23", "24", "27"}
 
 
 class PhantomStagingMixin(models.AbstractModel):
@@ -67,6 +79,68 @@ class PhantomStagingMixin(models.AbstractModel):
         letter_xmlid = _LETTER_RESPONSIBILITY_TYPE_XMLID.get(getattr(self, "comp_letter", False))
         return self.env.ref(letter_xmlid) if letter_xmlid else self.env["l10n_ar.afip.responsibility.type"]
 
+    def _phantom_identification_is_valid(self, identification_type, digits):
+        """Same format check Odoo itself runs before saving (see l10n_ar's
+        res.partner._l10n_ar_identification_validation, backed by the
+        stdnum.ar library) -- reused here as a pre-check so we only correct
+        a document number when it would actually fail, never touch an
+        already-valid one.
+        """
+        afip_code = identification_type.l10n_ar_afip_code
+        if afip_code == "96":
+            return ar_dni.is_valid(digits)
+        if afip_code in ("80", "86"):
+            return ar_cuit.is_valid(digits)
+        return True
+
+    def _phantom_sanitize_identification(self, identification_type, vat):
+        """Correct a Phantom-supplied document number that would otherwise
+        fail Odoo's DNI/CUIT/CUIL format validation and block the whole
+        invoice/receipt from ever being created, instead of raising --
+        these documents were already fiscalized by Phantom, the data
+        quality issue is only in how the raw document number was
+        transcribed. A well-formed value is returned unchanged.
+
+        User-confirmed correction rules (2026-09-25), applied by digit
+        count of the document with all non-digit characters stripped:
+        - 7 or 8 digits: already a valid DNI, nothing to do.
+        - Fewer than 7 digits: right-pad with zeros to 8 (DNI's valid
+          length) -- e.g. "11111" -> "11111000". (Not 10: Odoo/AFIP only
+          accept 7 or 8 digits for DNI, see stdnum.ar.dni.)
+        - Exactly 11 digits: if it passes CUIT/CUIL's checksum+prefix
+          check, re-tag as CUIT or CUIL by prefix (see _CUIL_PREFIXES). If
+          it fails checksum/prefix, there is no way to "fix" a bad check
+          digit without fabricating data -- fall back to DNI with a blank
+          value (Odoo's own identification validation only runs on a
+          non-empty vat, so a blank one never raises).
+        - Anything else (9-10 digits, or no digits at all after a
+          non-numeric value): can't be a valid DNI (too long) or CUIT/CUIL
+          (wrong length) -- tag as "ID Extranjera"
+          (l10n_latam_base.it_fid), which has no format validation in
+          l10n_ar at all -- unless there are no digits whatsoever, in
+          which case use a fixed placeholder DNI instead of leaving the
+          document blank.
+        """
+        self.ensure_one()
+        if not identification_type:
+            return identification_type, vat
+
+        digits = re.sub(r"\D", "", vat or "")
+        if self._phantom_identification_is_valid(identification_type, digits):
+            return identification_type, vat
+
+        dni_type = self.env.ref("l10n_ar.it_dni")
+        if not digits:
+            return dni_type, "22222222"
+        if len(digits) < 7:
+            return dni_type, digits.ljust(8, "0")
+        if len(digits) == 11:
+            if ar_cuit.is_valid(digits):
+                cuil_or_cuit = "l10n_ar.it_CUIL" if digits[:2] in _CUIL_PREFIXES else "l10n_ar.it_cuit"
+                return self.env.ref(cuil_or_cuit), digits
+            return dni_type, False
+        return self.env.ref("l10n_latam_base.it_fid"), digits
+
     def _phantom_customer_id_note(self):
         """Not translated on purpose: this marker is written into the
         partner's Notes at creation time and searched for again on every
@@ -84,6 +158,7 @@ class PhantomStagingMixin(models.AbstractModel):
         self.ensure_one()
         identification_type = self._phantom_get_identification_type()
         vat = self.customer_document or False
+        identification_type, vat = self._phantom_sanitize_identification(identification_type, vat)
         company_domain = ["|", ("company_id", "=", False), ("company_id", "=", company.id)]
 
         if identification_type and vat:

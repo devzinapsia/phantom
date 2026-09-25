@@ -496,3 +496,107 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
 
         move_messages = staging.account_move_id.message_ids.mapped("body")
         self.assertTrue(any("manual process" in body for body in move_messages))
+
+    def test_short_document_padded_to_valid_dni(self):
+        """"11111" (5 digits) fails Odoo's DNI validation (needs 7 or 8) --
+        right-padded with zeros to 8, not the 10 first suggested, since
+        Odoo/AFIP never accept a 10-digit DNI (see stdnum.ar.dni)."""
+        staging = self._create_invoice_staging(
+            IDT="I300", Nro_Comp="00000300", Tipo_Comp="B", Documento="11111",
+        )
+        self.company._phantom_create_one()
+        staging.invalidate_recordset()
+
+        self.assertEqual(staging.state, "processed")
+        partner = staging.account_move_id.partner_id
+        self.assertEqual(partner.l10n_latam_identification_type_id, self.env.ref("l10n_ar.it_dni"))
+        self.assertEqual(partner.vat, "11111000")
+
+    def test_long_valid_document_reclassified_as_cuil_by_prefix(self):
+        """"27256014020" is a real, valid CUIT/CUIL (11 digits, correct
+        checksum) -- prefix "27" is an individuals' prefix, so it's
+        relabeled CUIL instead of the DNI the invoice's own letter "B"
+        would otherwise force.
+        """
+        staging = self._create_invoice_staging(
+            IDT="I301", Nro_Comp="00000301", Tipo_Comp="B", Documento="27256014020",
+        )
+        self.company._phantom_create_one()
+        staging.invalidate_recordset()
+
+        self.assertEqual(staging.state, "processed")
+        partner = staging.account_move_id.partner_id
+        self.assertEqual(partner.l10n_latam_identification_type_id, self.env.ref("l10n_ar.it_CUIL"))
+        self.assertEqual(partner.vat, "27256014020")
+
+    def test_long_valid_document_reclassified_as_cuit_by_prefix(self):
+        """Same as above but prefix "30" is a companies' prefix -> CUIT."""
+        staging = self._create_invoice_staging(
+            IDT="I302", Nro_Comp="00000302", Tipo_Comp="B", Documento="30659414615",
+        )
+        self.company._phantom_create_one()
+        staging.invalidate_recordset()
+
+        partner = staging.account_move_id.partner_id
+        self.assertEqual(partner.l10n_latam_identification_type_id, self.env.ref("l10n_ar.it_cuit"))
+        self.assertEqual(partner.vat, "30659414615")
+
+    def test_mid_length_document_falls_back_to_foreign_id(self):
+        """9 digits is too long for DNI (max 8) and too short for CUIT/CUIL
+        (needs exactly 11) -- can't be corrected into either, so it's
+        tagged "ID Extranjera", the only identification type with no
+        format validation in l10n_ar.
+        """
+        staging = self._create_invoice_staging(
+            IDT="I303", Nro_Comp="00000303", Tipo_Comp="B", Documento="962889963",
+        )
+        self.company._phantom_create_one()
+        staging.invalidate_recordset()
+
+        self.assertEqual(staging.state, "processed")
+        partner = staging.account_move_id.partner_id
+        self.assertEqual(
+            partner.l10n_latam_identification_type_id, self.env.ref("l10n_latam_base.it_fid")
+        )
+        self.assertEqual(partner.vat, "962889963")
+
+    def test_invalid_eleven_digit_document_falls_back_to_blank_dni(self):
+        """11 digits but with a prefix ("99") that isn't a real CUIT/CUIL
+        prefix -- there's no way to "fix" an invalid check digit without
+        fabricating data, so it's saved as DNI with a blank vat (Odoo's
+        own identification validation only runs on a non-empty vat).
+        """
+        staging = self._create_invoice_staging(
+            IDT="I304", Nro_Comp="00000304", Tipo_Comp="B", Documento="99999999999",
+        )
+        self.company._phantom_create_one()
+        staging.invalidate_recordset()
+
+        self.assertEqual(staging.state, "processed")
+        partner = staging.account_move_id.partner_id
+        self.assertEqual(partner.l10n_latam_identification_type_id, self.env.ref("l10n_ar.it_dni"))
+        self.assertFalse(partner.vat)
+
+    def test_non_numeric_document_uses_placeholder_dni(self):
+        staging = self._create_invoice_staging(
+            IDT="I305", Nro_Comp="00000305", Tipo_Comp="B", Documento="N/A",
+        )
+        self.company._phantom_create_one()
+        staging.invalidate_recordset()
+
+        self.assertEqual(staging.state, "processed")
+        partner = staging.account_move_id.partner_id
+        self.assertEqual(partner.l10n_latam_identification_type_id, self.env.ref("l10n_ar.it_dni"))
+        self.assertEqual(partner.vat, "22222222")
+
+    def test_missing_sale_tax_falls_back_to_21_percent(self):
+        staging = self._create_invoice_staging(
+            IDT="I306", Nro_Comp="00000306",
+            Detalle="1, Internet 20MB, 1000.00,-2.00,980.00;",
+        )
+        self.company._phantom_create_one()
+        staging.invalidate_recordset()
+
+        self.assertEqual(staging.state, "processed")
+        move = staging.account_move_id
+        self.assertEqual(move.invoice_line_ids.tax_ids.amount, 21.0)
