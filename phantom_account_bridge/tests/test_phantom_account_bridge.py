@@ -600,3 +600,85 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
         self.assertEqual(staging.state, "processed")
         move = staging.account_move_id
         self.assertEqual(move.invoice_line_ids.tax_ids.amount, 21.0)
+
+    def test_non_phantom_user_can_open_vendor_bill_sale_invoice_and_payment(self):
+        """phantom_invoice_ids/phantom_receipt_ids used to be unrestricted
+        fields referenced (via "invisible") by the "Phantom" stat button on
+        account.move's/account.payment's shared form views -- shared across
+        every move_type (account.view_move_form is one single view for
+        invoices, bills, credit/debit notes alike). Since phantom.invoice/
+        phantom.receipt are only readable by group_phantom_user/_manager,
+        opening *any* vendor bill, sale invoice, or payment as a user
+        without a Phantom group raised an AccessError on phantom.invoice,
+        even though that user has nothing to do with Phantom.
+
+        Fixed with groups="phantom_connector.group_phantom_user" on both
+        buttons (so the view's compiled arch for a non-Phantom user never
+        references the field at all, and the web client therefore never
+        asks web_read for it) and, for defense in depth, on both fields
+        too (any other view that explicitly asked for the field would get
+        a clear AccessError naming the field itself instead of leaking the
+        phantom.invoice/phantom.receipt ACL as an implementation detail).
+        """
+        billing_user = self.env["res.users"].with_context(no_reset_password=True).create({
+            "name": "Billing User",
+            "login": "billing_user_access_test",
+            "email": "billing_user_access_test@example.com",
+            "company_ids": [Command.link(self.company.id)],
+            "company_id": self.company.id,
+            "group_ids": [Command.link(self.env.ref("account.group_account_invoice").id)],
+        })
+
+        vendor_bill = self.env["account.move"].create({
+            "move_type": "in_invoice",
+            "partner_id": self.partner_a.id,
+            "company_id": self.company.id,
+            "invoice_date": date(2026, 9, 1),
+        })
+        sale_invoice = self.env["account.move"].create({
+            "move_type": "out_invoice",
+            "partner_id": self.partner_a.id,
+            "company_id": self.company.id,
+            "invoice_date": date(2026, 9, 1),
+        })
+        payment = self.env["account.payment"].create({
+            "payment_type": "inbound",
+            "partner_type": "customer",
+            "partner_id": self.partner_a.id,
+            "company_id": self.company.id,
+            "journal_id": self.receipt_journal.id,
+            "amount": 100.0,
+        })
+
+        for record, field_name in (
+            (vendor_bill, "phantom_invoice_ids"),
+            (sale_invoice, "phantom_invoice_ids"),
+            (payment, "phantom_receipt_ids"),
+        ):
+            record_as_billing = record.with_user(billing_user)
+            view = record_as_billing.get_view(view_type="form")
+            self.assertNotIn(
+                field_name, view["arch"],
+                "%s must not appear in the form arch for a non-Phantom user" % field_name,
+            )
+            # The real web client only ever requests fields the compiled
+            # view references -- with the restricted field correctly
+            # pruned from the arch above, it's never part of this request
+            # either, exactly like opening the record for real. (Directly
+            # asking web_read for the restricted field by name is a
+            # different, intentional case: Odoo raises AccessError on that
+            # regardless of this fix -- see _check_field_access -- which is
+            # correct and not what this test is about.)
+            result = record_as_billing.web_read({"id": {}, "state": {}})
+            self.assertTrue(result)
+
+        # A Phantom user must still see the field and the button normally.
+        for record, field_name in (
+            (vendor_bill, "phantom_invoice_ids"),
+            (sale_invoice, "phantom_invoice_ids"),
+            (payment, "phantom_receipt_ids"),
+        ):
+            view = record.get_view(view_type="form")
+            self.assertIn(field_name, view["arch"])
+            result = record.web_read({field_name: {}})
+            self.assertIn(field_name, result[0])

@@ -5,7 +5,8 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     phantom_invoice_ids = fields.One2many(
-        "phantom.invoice", "account_move_id", string="Phantom Invoice"
+        "phantom.invoice", "account_move_id", string="Phantom Invoice",
+        groups="phantom_connector.group_phantom_user",
     )
 
     def action_view_phantom_invoice(self):

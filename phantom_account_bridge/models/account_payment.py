@@ -5,7 +5,8 @@ class AccountPayment(models.Model):
     _inherit = "account.payment"
 
     phantom_receipt_ids = fields.One2many(
-        "phantom.receipt", "account_payment_id", string="Phantom Receipt"
+        "phantom.receipt", "account_payment_id", string="Phantom Receipt",
+        groups="phantom_connector.group_phantom_user",
     )
 
     def action_view_phantom_receipt(self):
