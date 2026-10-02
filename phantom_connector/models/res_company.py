@@ -79,13 +79,18 @@ class ResCompany(models.Model):
         offsets = {pytz.timezone(tz_name).utcoffset(now) for tz_name in tz_names}
         return tz_names[0] if len(offsets) == 1 else False
 
-    def action_phantom_import(self):
+    def action_phantom_import(self, trigger="manual"):
         """Import pending Phantom invoices/receipts for every company in
         self, right now, regardless of processing mode. Used both by the
         manual 'Import now' dashboard button (interactive, raises on
         failure; available to group_phantom_user and
         group_phantom_manager alike) and, per company, by the automatic
-        cron below.
+        cron below (trigger="automatic").
+
+        trigger only affects whether phantom_last_read_date (the
+        automatic-cron dedup marker) gets updated -- see
+        _phantom_import_one's docstring. It does not change what gets
+        imported.
 
         The actual read/write operations run under sudo() (see
         _phantom_import_one) since group_phantom_user has neither read
@@ -101,11 +106,11 @@ class ResCompany(models.Model):
                     _("Phantom integration is not enabled for %(company)s.", company=company.name)
                 )
             try:
-                company._phantom_import_one()
+                company._phantom_import_one(trigger)
             except PhantomAPIError as exc:
                 raise UserError(str(exc)) from exc
 
-    def _phantom_import_one(self):
+    def _phantom_import_one(self, trigger="manual"):
         self.ensure_one()
         company = self.sudo()
         client = PhantomAPIClient(company.phantom_url, company.phantom_user, company.phantom_password)
@@ -124,10 +129,15 @@ class ResCompany(models.Model):
         )
         self.env["phantom.receipt"].sudo()._phantom_upsert(receipt_rows, company)
 
-        company.write({
-            "phantom_last_read_datetime": fields.Datetime.now(),
-            "phantom_last_read_date": today,
-        })
+        values = {"phantom_last_read_datetime": fields.Datetime.now()}
+        if trigger == "automatic":
+            # phantom_last_read_date is only the automatic-cron dedup
+            # marker (see _phantom_due_for_automatic_import) -- a manual
+            # "Import now" must not count as "already ran today" for it,
+            # so the automatic cron still fires at its configured time
+            # even on a day someone already imported by hand.
+            values["phantom_last_read_date"] = today
+        company.write(values)
 
     def _cron_phantom_import(self):
         """Entry point for the automatic-mode cron. Companies in manual
@@ -143,7 +153,7 @@ class ResCompany(models.Model):
             try:
                 if not company._phantom_due_for_automatic_import():
                     continue
-                company.action_phantom_import()
+                company.action_phantom_import(trigger="automatic")
             except Exception as exc:
                 _logger.exception(
                     "Phantom automatic import failed for company %s", company.display_name

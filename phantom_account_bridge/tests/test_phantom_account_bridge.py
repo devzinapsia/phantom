@@ -2,7 +2,7 @@ import time
 from datetime import date
 from unittest.mock import patch
 
-from odoo import Command
+from odoo import Command, fields
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.exceptions import AccessError
 
@@ -682,3 +682,37 @@ class TestPhantomAccountBridge(AccountTestInvoicingCommon):
             self.assertIn(field_name, view["arch"])
             result = record.web_read({field_name: {}})
             self.assertIn(field_name, result[0])
+
+    def test_manual_create_does_not_block_automatic_cron_same_day(self):
+        """phantom_last_creation_run_date is only the automatic-cron dedup
+        marker (see _phantom_due_for_automatic_creation) -- a manual
+        "Process now" earlier the same day must not make the automatic
+        cron think it already ran and skip its own scheduled run.
+        """
+        self.company.write({
+            "phantom_processing_mode": "automatic",
+            "phantom_timezone": "America/Argentina/Buenos_Aires",
+            "phantom_create_hour": 0.0,
+            "phantom_last_creation_run_date": False,
+        })
+        self.company._phantom_create_one()  # manual, default trigger
+        self.assertFalse(self.company.phantom_last_creation_run_date)
+
+        with patch(
+            "odoo.addons.phantom_account_bridge.models.res_company.ResCompany._phantom_create_one"
+        ) as mock_create:
+            self.env["res.company"]._cron_phantom_create()
+            mock_create.assert_called_once()
+
+    def test_automatic_create_sets_dedup_date(self):
+        self._create_invoice_staging(IDT="I310", Nro_Comp="00000310")
+        self.company.write({
+            "phantom_processing_mode": "automatic",
+            "phantom_timezone": "America/Argentina/Buenos_Aires",
+            "phantom_create_hour": 0.0,
+            "phantom_last_creation_run_date": False,
+        })
+        self.env["res.company"]._cron_phantom_create()
+        self.assertEqual(
+            self.company.phantom_last_creation_run_date, fields.Date.context_today(self.company)
+        )

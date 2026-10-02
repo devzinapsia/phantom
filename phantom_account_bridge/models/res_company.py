@@ -157,10 +157,15 @@ class ResCompany(models.Model):
             ("company_id", "=", self.id), ("state", "in", _RETRYABLE_STATES),
         ]), trigger)
         company._phantom_retry_reconciliation()
-        company.write({
-            "phantom_last_creation_date": fields.Datetime.now(),
-            "phantom_last_creation_run_date": fields.Date.context_today(company),
-        })
+        values = {"phantom_last_creation_date": fields.Datetime.now()}
+        if trigger == "automatic":
+            # phantom_last_creation_run_date is only the automatic-cron
+            # dedup marker (see _phantom_due_for_automatic_creation) -- a
+            # manual run must not count as "already ran today" for it, so
+            # the automatic cron still fires at its configured time even
+            # on a day someone already processed by hand.
+            values["phantom_last_creation_run_date"] = fields.Date.context_today(company)
+        company.write(values)
         company._phantom_notify_creation_summary(
             invoices_processed, invoices_error, receipts_processed, receipts_error
         )
@@ -258,10 +263,11 @@ class ResCompany(models.Model):
         done = not remaining
         if done:
             company._phantom_retry_reconciliation()
-            company.write({
-                "phantom_last_creation_date": fields.Datetime.now(),
-                "phantom_last_creation_run_date": fields.Date.context_today(company),
-            })
+            # Always "manual" here (see this method's own docstring), so
+            # phantom_last_creation_run_date -- the automatic-cron dedup
+            # marker -- is deliberately not touched; only
+            # _phantom_create_one(trigger="automatic") sets it.
+            company.write({"phantom_last_creation_date": fields.Datetime.now()})
             company._phantom_notify_creation_summary(
                 invoices_processed, invoices_error, receipts_processed, receipts_error
             )

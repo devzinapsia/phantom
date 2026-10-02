@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from unittest.mock import patch
 
-from odoo import Command
+from odoo import Command, fields
 from odoo.exceptions import AccessError
 from odoo.tests.common import TransactionCase
 
@@ -202,6 +202,39 @@ class TestPhantomImport(TransactionCase):
         ) as mock_import:
             self.env["res.company"]._cron_phantom_import()
             mock_import.assert_called_once()
+
+    def test_manual_import_does_not_block_automatic_cron_same_day(self):
+        """phantom_last_read_date is only the automatic-cron dedup marker
+        (see _phantom_due_for_automatic_import) -- a manual "Import now"
+        earlier the same day must not make the automatic cron think it
+        already ran and skip its own scheduled run.
+        """
+        self.company.write({
+            "phantom_processing_mode": "automatic",
+            "phantom_timezone": "America/Argentina/Buenos_Aires",
+            "phantom_read_hour": 0.0,
+            "phantom_last_read_date": False,
+        })
+        self._mock_client(invoice_rows=[SAMPLE_INVOICE_ROW])
+        self.company.action_phantom_import()  # manual, default trigger
+        self.assertFalse(self.company.phantom_last_read_date)
+
+        with patch(
+            "odoo.addons.phantom_connector.models.res_company.ResCompany._phantom_import_one"
+        ) as mock_import:
+            self.env["res.company"]._cron_phantom_import()
+            mock_import.assert_called_once()
+
+    def test_automatic_import_sets_dedup_date(self):
+        self.company.write({
+            "phantom_processing_mode": "automatic",
+            "phantom_timezone": "America/Argentina/Buenos_Aires",
+            "phantom_read_hour": 0.0,
+            "phantom_last_read_date": False,
+        })
+        self._mock_client(invoice_rows=[SAMPLE_INVOICE_ROW])
+        self.env["res.company"]._cron_phantom_import()
+        self.assertEqual(self.company.phantom_last_read_date, fields.Date.context_today(self.company))
 
     def test_group_phantom_user_can_trigger_import(self):
         """group_phantom_user has neither read access to phantom_password
